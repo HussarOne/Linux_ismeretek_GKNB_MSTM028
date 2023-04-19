@@ -1,0 +1,95 @@
+File hozzáférési rendszer:
+	drwxrwxrwx = 10 egységes leírása a "file"nak, hogy milyen jogosan vannak
+	d = directory
+	r = read allowed      = értéke: 4
+	w = write allowed     = értéke: 2
+	x = execute allowed   = értéke: 1
+	s = *speciális dolog, olyan futtatási permission ami nem ad a groupoknak X jogot, de
+	     mégis a tulajdonló csoport jogával tudja futtatni a kívülálló csoport a filet
+	
+		    // nem dependens a read jogon! Anélkül, hogy látnám mi van egy
+		    // mappában (pl nem listázhatom) de elérhetek belőle tudok
+		    // végrehajtani!
+	
+	  rwx rwx rwx
+ 	d ___ ___ ___ 
+	   |   |   |
+	 owner |   |
+	       | public
+	     group
+	     
+	chmod paranccsal tudjuk módosítani magunknak és más csoportoknak a fileon!
+	// segítség hozzá: https://chmod-calculator.com/
+	pl:
+		chmod 777 szoveg.txt
+		chmod 664 szoveg.txt
+		chmod 644 szoveg.txt
+		
+		százas helyiérték = owner-re vonatkozó jogok
+		400 = r-- --- --- 
+		600 = rw- --- ---
+		700 = rwx --- ---
+		
+		tizes helyiérték = group-ra vonatkozó jogok
+		040 = --- r-- --- 
+		060 = --- rw- ---
+		070 = --- rwx ---
+		
+		egyes helyiérték = public-ra vonatkozó jogok
+		004 = --- --- r--
+		006 = --- --- rw-
+		007 = --- --- rwx
+		
+		csak read :   400 v 040 v 004 | r--
+		csak write:   200 v 020 v 002 | -w- 
+		csak execute: 100 v 010 v 001 | --x
+
+		read execute:  500
+		write execute: 300
+		
+		100 = csak execute
+		200 = csak write
+		300 = write execute
+		400 = csak read
+		500 = read execute
+		600 = read write
+		700 = read write execute
+
+a linux nem veszi figyelembe a file kiterjesztését, belenéz a file szerkezetébe, hogy valóban megegyező-e a kiterjesztésével, magic bitet képez róla, és csak egyezés után futtatja
+
+magic bit = 
+	első néhány byte alapján jól felismerhető az állomány szigniturája, hogy milyen típusú
+	file
+
+
+parancsok:
+	file:
+		file /bin/bash
+			-> 64 bites executable, + egyéb tualjdonságok
+	
+		file szoveg.txt //a szoveg.txt egy local példa volt itt
+			-> ASCII file
+		
+		file [valami kép itt.kiterjesztés]
+			-> még a felbontását is megmondja
+	
+	more:
+	
+	mv:
+	
+	passwd: jelszó cseréhez használatos program
+	
+	which: Megmondja, hogy egy program hová lett feltelepítve a filerendszerbe!
+		which google-chrome
+			-> /usr/bin/google-chrome
+		
+		which passwd		//passwd jelszócserélő parancs program helye!!
+			-> /usr/bin/passwd
+	
+Minden shell scriptnek tipikusan .sh a kiterjesztése
+
+/etc/passwd
+/etc/shadow
+
+
+----- az óra véget ért 16:50kor mert el kellett mennie ----

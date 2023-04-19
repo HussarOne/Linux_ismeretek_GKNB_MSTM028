@@ -1,0 +1,96 @@
+def terminal emulator:
+	VT220-as terminal gépet emulál, ami szabványositja a terminalos parancssort
+	scroll lock, print screen
+
+def vékony kliens:
+	előnyök
+	hátrányok
+	
+ssh, ls
+
+Shell biztosítja a felhasználó kapcsolát a hardware elemekkel, azzal, hogy
+kapcsoaltot teremt a kernel funkciokon keresztül a végeszközökkel
+
+kernel funkcio elérése:
+	hardware management
+		illeszti a háttértárakat, ramokat, perifériákat, és nekem nem kell tudnom,
+		hogy az egy SSD vagy HDD vagy ramdisk amin vannak a fileok, csak absztraktálja
+		a driverek illesztséével számomra, hogy amikor beírom az 'ls' parancsot, akkor
+		mind a 3-mon csak visszaadja a tárolt fileokat spéci szaktudás nélkül arra a
+		hardwerre!
+
+	task scheduling
+	
+'man' parancsok más parancsokkal, mint pl: man ls -> az ls parancs 'man'uálja!
+
+whoami
+
+linux már tervezés szintjén több felhasználós rendszernek lettek tervezve!
+
+id parancs:
+	milyen csoportokban(jogkörökben) van benne a felhasználó
+
+
+def shell: (?)
+	Bourna Aga... SHell = BASH
+	
+	
+programozási nyelv szükségességei:
+	szintaxisai vannak
+	vannak adattípusai és változói
+	műveletek a változókon
+	interaktív??
+	
+for i in alma körte; do echo $i; done
+
+
+a linuxban majdnem minden file!
+fileként kezeljük a billentyűről jövő adatokat is, sőt
+a terminálra kiírt adatokat is!
+A termináls zerver oldalán úgy csinál mintha egy filet olvasna egy read parancsot, sor bontásban
+
+parancssorból lehet indítani programokat a nevük begépleésével. Ha environment része a program neve(pl apt, snap, appimage, stb.) vagy hozzáadjuk az environmenthez, akkor a nevét beütve meghívható.
+
+control z a process megállítása a terminalban, a promtot visszaadja, a process viszont leáll - nem fut
+ebben az esetben a process neve aktív és benne van a processek listájában de nem kap processzor időt
+ a 'bg' parancs ezt újraindítja! ismét kap process időt!
+
+Ha alapvetően úgy akarom elindítani, hogy a terminálról a firefoxot pl, de a terminál ismét kelleni fog
+mert még akarok bele írni (vagyis a process futtatását nem akarom megvárni, async futtatást kívánok) akkor a process nevét és egy "&" jelet kell utána írni! 
+	pl:
+		firefox &
+
+Hivatkozások manipulálása:
+	alias: 
+		más néven is el tudom érni a parancsokat vagy programokat amik telepitve vannak.
+		lényegében környezeit változót hoz létre!
+		
+		syntax: alias python ls = python parancs beirásával az ls érhető el. (barom pelda lol)
+		
+		NEM TÁROLJA A TARTÓSAN A BEÁLLÍTÁSOKAT!! 
+		amint végetért a shell processe azonnal megszűnik az aliasok.
+		(mivel minden file a linuxban azért a filevégjel signal beillesztésénél 
+			(ctrl + D, ascii 10) azt hiszi, hogy a file véget ért amiből olvast ezt
+			a terminál lezárul)
+		normális esetben az exit paranccsal lépünk ki a shellből
+	
+	linkelés:
+		
+	
+ls * -m, ls * -l -m, ls -1 | short, short
+
+a fileból írás és olvasás haszna, hogy átírányíthatóság érdekében nem kell megkérnem az 'ls' könyvtár 
+készítőjét, hogy írja át nekem a programot ha az épp nem fileba írás olvasásos rendszeren fut, hanem 
+egy olyanon, amin billentyűzetet kell figyelni... Mivel mindegyik program ezen az elven készül, így
+kompatibilisak egymással, mert amit az egyik kiír fileba a másik beolvassa program, thus:
+	
+	átirányított eredmény!
+	Emiatt igen erős eszköz a shell!
+
+
+sort parancs:
+	bementére érkező szavakat ABC sorrendbe szervezi
+	
+ctrl + D : FILE vég jel! \n ?
+
+fg parancs: process content, memória területe, meg minden ilyen

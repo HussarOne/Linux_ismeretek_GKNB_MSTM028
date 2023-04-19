@@ -1,0 +1,116 @@
+Shell es joker karakterek:
+
+ha valami filenak a neve előtt '.' van akkor az rejtett file alapvetően, és 
+sima 'ls' parancs nem hozza ki.
+
+shellnek lehet saját konfig file-ja, de ennek usually nincs kiterjesztése,
+vagy csak önmaga is egy shellként üzemelő script. ".bashrc"-ben található
+ez a konfiguráció. 
+
+Lehet benne ilyen mint:
+	HISTSIZE <méret itt számban(int)> : 
+		Ennyi számnyi kiadott parancs történetet jegyez meg.
+		Efelett a szám felett már töröl!
+		
+		helye: .bash_history a file amibe gyűjti a logot!
+		
+	HISTTIMEFORMAT: (átesés)
+	HISTTIME: "%Y.%m.%d %H:%M:%..." formátuma van kb
+		beállítja milyen időformátum bejegyzéseket hozzon
+		létre a logban. Minden sor elé berak egy INTEGER
+		UNIX time stampet!! Ez a "history" paranccsal vissza-
+		alakítható rendes dátumokká!
+		
+	Minden usernek saját .bashrc-je van így a beállítások nem 
+	keverednek össze!
+
+shellben:
+	a = 4		// értékadásnál nem írhatom oda a dollár jelet!
+	echo $a		// kiíratásnál viszont köteleőzen használnom kell!
+	-> 4
+	
+	echo $HISTSIZE
+	-> (kiírta a dolgot számban!)	//tehát változóként írta ki
+					//a betöltött scriptekből!
+	
+	echo HISTSZIZE
+	-> HISTSIZE	// tehát nem változóként írta ki!!
+
+	echo $PATH 	// keresési út változó
+	
+	joe bin/sajat	// joe = szövegszerkesztő
+	
+	bin/sajat file{
+		#!/usr/bin/bash   
+		#extra jelentés az első sori kommentnek: 
+			bele lehet írni, hogy melyik script értelmező
+			nyelvel szeretnénkértelmezni
+
+		# Köszönés kiírása
+		echo Hello World
+	} 
+		[Csatolni a filet ide!]
+	
+	Lehet mással is ilyen scriptet csinálni, mert ha átírjuk az elején,
+	hogy e python értelmezője futtassa, akkor a python nem fogja tudni
+	leffutatni ér hibát dob mert nem ismeri a bash parancsait!
+	
+	PATH-ba való beletétel:
+		PATH -nevá változót állítjuk
+		PATH=/home/hussarone/bin:$PATH --- eddigi path érték!
+					  |	     string katanáció
+					  |
+		//kettőspont a hozzáfűzés és nem a felülírás!!
+		
+		elegánsabb verzió:
+		
+		//ITT NE LEGYEN SZÓKÖZ A PATH UTÁN AZ EGYENLÚSÉG ELŐTT!!
+		//SE UTÁNA!!
+		   | |
+		PATH=$HOME/bin:$PATH
+		//unverzálisan állítja be a usernek a home mappájára a 
+		//dolgokat
+		
+	Ezután a beállítás után már nem kell bin/sajat-ot írni, hanem elég
+	egy már megtötént chmod 744 után be<rni, hogy saját, mivel a környe-
+	zet miatt már működik a dolog és látja!
+		
+	Ahhoz hogy a módosított PATH megmaradjon a shell élettartamán túl,
+	ahhoz a .bashrc shell file-ba be kell írni az értékét!
+	
+		export tulajdonság válotozóra, mint pl,
+		export PATH=.:$PATH - azt befolyásolja, hogy további
+		sub-shelleknél tovább öröklődjön lefele a PATH értéke!
+	
+	Azt, hogy a shell mit lát változókat, az 'env' nevű paranccsal 
+	érhetjük el.
+	
+	Shell nem típusos nyelv.
+
+Speciális karakterek:
+	' '  = szókör
+	'/n' = sorvégjel, azaz enter
+	'&'  = visszaadja a promptot, az indított program NEM tartja a 
+	       shellt amíg az véget nem ért! pl: 'firefox &'
+	'\'  = escape karakter, amit utána írtunk ne az eredeti értelmét nézze, 
+		hanem string interpretációját! Pl: echo \$a 
+      ' '' ' = ebben nem történik meg a változó kiértékelése!
+	       pl: echo '$a' -> $a
+	       
+      ' "" ' = ebben megtörténik!
+      	       pl: echo "$a" -> 5	//mert a=5 volt az env-ben.
+	
+Signalos kommunikáció: 
+	egyik kommunikációs formája a processeknek egymás közt
+	hátránya: 
+		- egyirányú! Küldök signalt de ő nem tud nekem(?)
+		- nem tudunk adatokat küldeni a másik processnek!
+			(nem tudok fileokat vagy adathalamzokat küldeni)
+		- túloldalon fogadni is kell tudni!! (ha lefagy cseszhetem)
+		
+		//egyetlen egy signal van amit mindenképp megkap: sigkill
+		
+	(signal küldés is joghoz kötött)
+	
+		
+	

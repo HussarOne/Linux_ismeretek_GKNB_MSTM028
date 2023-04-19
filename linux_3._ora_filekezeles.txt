@@ -1,0 +1,90 @@
+Szelearningen kell beadni a beadandókat
+terminalban lefuttatott parancsokat kell beadni mint source file
+még nem tisztázta lényegében hogy mi a feladat, vagy mi a szintje
+
+
+volatilis (RAM) vs non-volatilis(hattértár) memória különbsége
+
+Filerendszerek:
+
+filerendszer képes mappa rendszerbe rendezni a háttértárra írt tartalmakat
+
+mi a file? 
+	def file: 
+		A háttértáron való adattárolás egysége (nem legkisebb egysége, csak egysége)
+		Lehet 0-a hosszúságú is.
+		Kötelező tulajdonság: kell lennie EGYEDI neve!
+		Ezt úgy kell érteni, mint teljes filerendszer útvonallal együtt kell érteni!
+		
+Tudnia kell védeni a filerendszerbe írt fileokat. Írás és olvasás, végrehajtás védése jogrendszer alapján. Régebbi filerendszerek ilyeneket nem tudnak minden esetben... (pl FAT-16 nem tud ilyet)
+
+Olyan mint Linux filerendszer olyan NINCS! Több 10 van amit lehet használni, de ezek igen hasonlítanak
+egymásra! Különbségek: Naplózás, Verziokezelés...
+
+EXT filerendszer és verzioi...
+
+(Régi windowsok nem is operációs rendszerek, hanem DOS OS-re épólő ablakkezelő)
+
+FAT:File Allocation Table
+	Primitív filerendszer, komoly helyeken nem használják ma már, de elterjedt
+	Pendrive és SD kártyták tipikus rendszere, mivel igen régi és elterjedt ezért lényegében
+	kimondatlanul de kompatibilitást ad OS-ek és tárolók között, mert minddel kompatibilis 
+	régisége miatt.
+	
+File rendszer fragmentálódásának elmagyarázása, defragmentáló algoritmus nem sokat segített rajta
+korai napokban mivel az áthelyezéses lyukkitöltő stratégia újra fragmentálta a dolgot igazából...
+
+HDD sebessége kerületi sebesség miatt a külső részeken nagyobb sebességgel tud írni olvasni, hiszen ugyan annyit fordul a kar, de a sugárirány miatt belül kevesebb egységnyi tárhely fér!
+
+SSDre a tartalmak random elhelyézssel kerülnek fel, hogy a területen el legyen oszlatva a 
+terhelés, hiszen az írás erősen károsítja az SSD szerkezetét. Az olvasás is károsítja de 
+sokkal kevésbé.
+
+
+NTFS (filerendszer):
+	DOS-os világból FAT filerendszerből jön. 
+	8 karakter név + 3 karakter kiterjesztés volt a konvencio.
+	Maximum 26db drive lehetséges, mert elfogynak az angol ABC betűi.
+	Elsődleges és másodlagos particio létezése (említés csak)
+	
+EXT filerendszer linuxban:
+	Úgynevezett egységes filerendszer
+	Gyökér filerendszer jele a "/" jel, minden ez alatt van, minden eszköz
+
+	"media" mappa, ami a gyökérben van, és ezekben vannak almappák amik a usernevekre
+	hallgatnak amikbe lehet mountolni a különböző adathordozókat.
+	
+	"dev" mappa: 
+		device rövidítése, ebben a mappában található meg minden telepített hardware
+		amit a gépbe csatlakoztattak. Onnan tudjuk, hogy van-e pl CD meghajtó, hogy
+		vannak naming conventionok amikből tudható, hogy csatlakoztatva lett.
+
+		Egy device több néven is elérhető.
+
+		s: serial (sata csatolós)
+		d: disk
+		+ első számú betű
+		+ számok, hogy hányadik
+		---------------------
+		vagyis: /dev/sda<num>
+
+		File szinten tudunk minden eszközre hivatkozni.
+
+	Rendelkezik csoport funkcióval. Felhasználókat lehet jogkörökbe csoportosítani.
+
+Parancsok:
+	groups:
+		Listázza a felhasználói csoportokat amiben a mostani, vagy megnevezett 
+		user benne van
+		
+	mount: 
+		mount /dev/<device name> /mount/to/folder
+		
+		pl: mount -o ide.img /home/fulep/LOPOTTCD 
+		
+		network filesystem + ip cím!!
+		
+	
+Kiegészítő flagek:
+	-l parancs : Long megjelenítés
+	

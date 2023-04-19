@@ -1,0 +1,63 @@
+beszélt a feladatokról, de később érkeztem
+
+vi/vim, joe, nano bemutatása, történelmi háttere miért ilyenek.
+
+az órán most az "első.sh" shell scriptet fogjuk írni!
+
+
+minden scriptet a saját formátumában értelmező shell környezet nevének hívásával lehet lefuttatni + saját neve beírásával, pl
+	
+	bash elso.sh
+
+azonban nem feltétlen kell leírni elé a shell értelmezőt,mert ha chown/chmod-oljuk a filet futtathatóra, pl chown 755 elso.sh-val, akkor lehet csak
+
+	./elso.sh 
+
+módon meghívni futtatásra, ahol a "./" része az aktuális könyvtárra hivatkozik, hogy honnan hívja!
+Abban az esetben lehet csak "elso.sh" vagy "elso" néven hivatkozni rá, hogyha környezeti változónak hozzáadjuk a környezethez!
+
+
+shell dolgok:
+	minden parancssori argumentum dollár jeller kezdődik!
+	pl:	
+		 $0 v $1..  -  ezek parancssori argumentumok lesznek
+		\$0 v \$1   -  nem fogja változónak venni, csak kiírja stringként
+
+
+	if [ ]:
+		then - igazság esetén ide lép! Az if alatt kell lennie! pl:
+			
+			if [ ... ]
+			then 
+				<igazsághoz tartozó logika itt>
+
+		else - hamis ág, ide lép ha nem a then-be!
+		exit - logikai ág végrehajtásának végét jelzó kulcsszó
+
+		and logikai kapcsolat ?
+		or logikai kapcsolat  ?
+
+		fi   - EZ AZ IF LEZÁRÓ RÉSZE!! Mindenképpen kell!
+
+
+		
+	numerikus szerkezeti dolgok:
+		lt -
+		gt -
+
+		eq -
+
+		ge -
+		le -
+
+		!  -
+
+		
+
+
+	file szerkezeti dolgok:
+
+
+man mint funkció (program) mire hasznos és mi a formátuma, példák mutatása rá - nem nagyon fontos
+
+<Az óra véget ért 17:16kor! a maradék anyag a bash fileból átírásra kerül később>

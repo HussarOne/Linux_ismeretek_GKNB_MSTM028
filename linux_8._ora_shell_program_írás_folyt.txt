@@ -1,0 +1,108 @@
+ a masodik.sh-ba írtam a dolgokat
+
+
+említést tett ezekre:
+	bc - számológép nyelv ami bashnek command line elérhető és hívható
+		"echo "2+2".1 | bc " -> 4.1
+		"echo "2*(2.1+1) | bc" -> 6.2
+		további lehetőségek: 
+				- változók a "var" kulcszóval =-et használva adunk meg
+				- modulo osztás a %-al
+				- ciklusok is vannak, for loopok!
+
+	aritmetikai műveletek shellben:
+		x=$((1+2)); echo $x
+		=> 3
+		
+		tehát képes elvégezni, de iszonyatosan low level és primitív, fura syntax ... 
+		furcsaságra példa: ^ a XOR művelet! nem hatvány!!
+
+		kis mérete van tho! Méretének ellenőrzése:
+			ls -l `which bc`
+
+		a ` ` jelek közé lehet rakni valamilyen sub parancsot amit végrehajt a shell és
+		pathként fog szolgálni az "ls -l" számára
+		
+
+A futó processek usually nem fognak fileokat a háttértáron, tehát olyan programot is le tudok
+törölni, ami épp be van töltve a memóriába. Tehát pl egy "rm \ -rf" ami:
+	rm  - remove mappa or file from folder structure
+	 \  - gyökértől indul a path ahonnan törölni akarok
+	-rf - recursive
+	    - force, ne kérezzen semmit se a usertől!
+
+amivel rekurzívan le lehetne törölni a gyökártől kezdve minden mappát! Linuxon minden file ami törölve
+van az eléggé le van törölve, és majdnem biztosan nem lehet visszállítani!
+
+rmdir = csak üres mappát töröl! Az rm hátrányai miatt találták ki!
+
+
+
+find parancs: Which-hez hasonló keresés összességében, fileneveket talál meg!
+	pl:
+	    (sudo) find / -name passwd -print
+	    (sudo) find /etc -name passwd -exec ls -l {} /tmp \; /dev/null   <-- a szemetet átirányítja a devnull voidba!
+						      |       |
+			           filenév helyettesítő!      |	
+						              |
+						    "ez jelzi hogy hol van vége" (a keresésnek?)
+
+	    (sudo) find /home/hussarone/videok -size 5GB -exec -rm {} \; 2>/dev/null 
+		
+	
+mtime = fileok mikor módosultak legutóbb a rendszeren!
+
+
+tömörítő programok:
+	zip - becsomagol, ritkán használt (windowsról jött ár... elég gagyi)
+	unzip - kicsomagol ritkán használt
+
+	gzip - GNU zip! sima zip párja! PARAMÉTEREZNI KELL! Ez már nem windowosoknka készült :))
+		pl: gzip -lt masodik.sh.gz    <- miért egyből.gz?
+
+		- t = test the file for errors, nem szakadt-e meg a tömörítés and such
+		- l = kilistázza mi van benne! akár mappákat is kilistáz belőle! most csak egy file!
+		- d = decompress, azaz kicsomagol!
+
+
+	tar - fél évszázados,UNIX hagyományok miatt elterjedt, mai napig aktívan használt 
+	      T-archive (azaz tape, mint szalagos archive-ra találták még ki! :) )
+
+	      pl: tar cvf ide.tar /etc/
+		  - c = create
+		  - v = verbose, lássak mindent
+		  - f = fileba akarok dolgozni nem tape-ről!!!
+		 
+                   ide.tar = így akarom nevezni az elvégzett tömörítés után a fileomat
+		   /etc/   = ezt az egész mappát akarom becsomagolni!
+			     hibát fog dobni, ha valami olyan file-ra fut, amihez nincs joga olvasi, végrehajtani
+			     ilyenkor az a file kimarad a tömörítésből, a hibától nem fog leállni!
+
+		 tar xvf ide.tar 
+	
+		  - x = extract
+		  - v = verbose
+  		  - f = fileból/fileba doglozni
+		  - z = compress!! Minden rendszeren szinte!!
+
+		ide.tar = ebből akarom kibontani a dolgot
+		[ path ]  = (hiányos path parancs) Ide tömöríti ki az anyagot, ezesetben a current ./ folder lesz
+		
+		Ha már tömörített, és kompresszált file-al van akkor a file kiterjezstése "ide.taz" !!
+
+		Tömörítéshez a gzip-et használja! Minden irányba működik! gzip is kitömörítheti, dekompresszálhatja
+		azt amit a tar becsomagolt, stb ...
+
+		Technikai részlet: ha .taz file-t állítok vissza az eredeti méretére, akkor elhagyható a z kapcsoló, mert
+				   lényegében 'okos' és felismeri, hogy kompresszált a file...  
+						//mi az eltérés a tömörített és kompressálz file közt??
+
+Az óra véget ért 17:08-kor
+
+
+		
+		    
+ 
+
+
+	

@@ -1,0 +1,115 @@
+Átirányítás témaköre:
+	
+	3 file megnyitásra kerül a process indításakor a shellben is
+	hozzákötődik ahhoz az interaktív módhoz ahogy a user használja a gépet (standard: input, output, error)
+	ezek mind fileok, és amiért a mgnyitáskor jönnek létre, ezért mindig a 0, 1, 2-es azonosítót kapnak!
+	
+	0: input
+	1: output
+	2: error
+	
+	Ezek mind fileok, de nem kerülnek tárolásra! Csak viselkedésükben hasonlítanak a rendes fileokra, 
+	csak a memóriában léteznek!
+	
+	hiba üzeneteket elkülönítjük több ok miatt a kiírástól!
+		okok pl:
+			- ne vesszen el sok helyes output között a hibaüzenet a sokszázadik sorban
+			- hiba esetén ne kerüljön ki outputra érzékeny program tartalom
+	
+	ctrl + d : filevégjel!
+	
+	átirányítás jele: '>' (kacsacsőr) 
+	
+	syntax: [parancs] > "file név"  pl: date > fájl
+		- Ha nincs olyan file amit "file név" kér, akkor létrehozza a file-t amibe az átirányítást kell tenni
+		- FELÜLÍRJA a file eddigi tartalmát!!
+		
+	append jele: '>>' (dupla kacsacsőr)
+	
+	syntax: [parancs] >> "file név" pl: date >> fájl
+		- Appendel az eddigi file végére! Nem töröl mint az előző!
+		- Ha jogok miatti file létrehozás vagy futtatás nem jön létre, akkor nem fut le a parancs
+		
+	rossz példa, hibás paranccsal tönkrevágás: 
+		pl: ls /hfjkdshjfksd > fájl
+		
+		Előbb nyitja meg a file-t írásra, és jön rá, hogy a parancs hibás eredményt ad, így nem beleírható.
+		Azonban ebből a file megniytás után a pointere előre kerül, így a belső tartalma elveszik, amikor
+		a pointerrel az elején ismét ki lesz mentve a hibásság érzékelése után! 
+		
+	A FILEOK MINDIG BEZÁRÓDNAK!!		
+		
+		
+	Átirányítás:
+		egyfele átirányítás:
+			[parancs] <kimenet száma> '>>' "file név" 
+				pl ls -la 2>> error.log
+				
+		kétfele átirányítás:
+			[parancs] <kimenet száma>'>>' "file név <kimenet száma>'>>' "masik file"
+				pl: ls -la 1>> kimenet.log 2>> error.log
+			
+		egybefűzése:
+			[parancs] '&>>' "file név"
+				pl: ls -la &>> mindenlog.txt
+	
+parancsok:
+	ps : Processes parancs, kilistázza a user alatt futó processek listájáz (PID, TTY, TIME, CMD)
+	
+	cat: concatanate! Kettő vagy több filet is meg tud nyitni olvasásra, úgy, hogy kirakja őket a standard 
+	     outputra! A fileokat egymás után szinkronos módban nyitja meg, így biztosítja, hogy nem össze vissza
+	     nyílnak meg azok!
+	     
+	wc: word count! (Hány sor, hány szó, hány karakter)
+	
+	tee: reads standard input, then writes the output of a program to standard output and simultaneously copies
+	     it into the specified file or files!!
+	
+	ls -l -R /: a filerendszer összes fileját kilistázza, minden mappából rekurzív módon
+
+/dev/null -> ez egy file amibe bármit lehet irányítani, mert nem lesz neki helyfoglalása, gyakorlatilag minden 
+	     elveszik ami ide van irányítva. 		
+	     		pl: wc -l > /dev/null, 		vagy  
+			    ls -l -R / &>/dev/null
+	     
+	     
+date && date : szinkron, de feltételes indítás! A második 'date' parancs csak akkor fut le, ha az előző parancs 
+	       le tudott futni hiba nélkül!	
+	       		pl: date && date
+	       			-> 2x date kimenet
+	       		    date XXX && date
+	       		    	-> "érvénytelen kimenet"
+	       		    date && echo "Kész"
+	       		    	-> 
+		       !!!  date XXX || echo "Hiba történt" // ha elhasal, kiírja az echot!
+			    	-> Hiba történt!!
+			    date xxx || echo "hiba történt" | mail -s "hiba" balazs@hussar.one
+			    	
+			    
+			 Mi van ha async a dolog?  
+			   	-> unexpected token &&, nincs értelme igazán! Hibát dob!
+			   	
+'()' funkció:
+	(date ; sleep 3 ; date) | sort -r :
+		A date parancs lefut, majd vár 3 másodpercet, majd ismét lefut a date parancs, ezzel 2db date
+		kiírásunk lesz. Majd ezeket megvárva a sort parancsot ráengedve adja időben a közelebbit, tehát a
+		későbbit felül! A ( ... )-es rész az mindenképpen egyszerre ad eredményt! A háttérben fog futni amíg
+		a teljes sor el nem  készült! -> erre való a ( ... ), ami ebben van nem ad returnt amíg minden el 
+		nem készült!
+
+'|' funkció:
+	
+';' funkció:
+
+
+hová íródik a nemlétező file? ram memóriába?
+
+
+hogy lehet beleirányítani adatokat programokba? ezek szerint vagy mögé írva, vagy '<' jellel! 
+
+
+"shed" szövegszerkesztő! 
+
+
+	       			
+	       		
