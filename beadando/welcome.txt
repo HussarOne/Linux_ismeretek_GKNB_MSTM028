@@ -1,1 +1,2 @@
 hello there from ubuntuuuu!!!
+sudo vmhgfs-fuse .host:/ /mnt/hgfs/ -o allow_other -o uid=1000 //ezzel a kommanddal lett beállítva
