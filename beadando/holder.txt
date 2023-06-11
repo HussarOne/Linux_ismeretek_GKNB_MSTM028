@@ -1,0 +1,17 @@
+Ebbe a fileba jönnek azok a segítségek, melyeket az interneten 
+találtam, és felhasználok. A file ténylegesen "holding" szerepet 
+tölt be.
+
+#Csatolása a windows shared mappáknak, ahonnan commitolok windowsról
+sudo vmhgfs-fuse .host:/ /mnt/hgfs/ -o allow_other -o uid=1000 //ezzel a kommanddal lett beállítva
+
+
+Karakter kurzol mozgatása promton:
+https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
+\033[<N>A
+
+
+
+
+Használt kód tartó:
+#printf "%s \n" "${char[1]}"
