@@ -10,7 +10,7 @@ while read -r -n 1 char; do
     if [[ $char = "" ]]; then
         printf "enter -> vége" 
     else
-        printf "%s \n" "$char"
+        printf "%s \n" "${char[1]}"
     fi
 done
 
