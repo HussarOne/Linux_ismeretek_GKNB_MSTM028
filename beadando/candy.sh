@@ -14,7 +14,7 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
     midWidth=$((width/2))
     midHeight=$((height/2))
     
-    if [[ $width -gt 20 ]] || [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
+    if [[ $width -gt 20 ]] && [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
         msg="A terminálnak minimum 34  magasság 64 szélesség kell!"
 
         separatorok=(21 34 47 53)
