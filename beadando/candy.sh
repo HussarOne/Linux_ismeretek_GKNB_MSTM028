@@ -129,7 +129,7 @@ sleep 2
 
 echo -e  "clear; \033c\e[3J"                #képernyő letisztítása
 echo -en "\033[1A"                          #kocsi feljebb ugratása 1-el 
-read -rsn 1 char         
+#read -rsn 1 char         
 
 
 ##Pálya megalkotása és kirajzolása logika
@@ -156,30 +156,37 @@ for((i = 0; i < kertMeret; i++)) do
             h=$((h+1))
         done
 
-        printf "%s" "${palya[$i,$j]}"
+        #printf "%s" "${palya[$i,$j]}"
     done
-    printf "\n"
+    #printf "\n"
 done
 
+declare -A palya_elemek                          #asszociatív array
+
 palya_elemek=(
-    [teto_7]="▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁"  #32db
-    [teto_diff_2]="▁▁▁▁▁▁▁▁"                     #8db, ennyinként növekedik a pálya!
+    [teto7]="▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁"   #32db
+    [teto2]="▁▁▁▁▁▁▁▁"                           #8db, ennyinként növekedik a pálya!
 
-    [alja_7]="▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔"  #32db
-    [alja_diff_2]="▔▔▔▔▔▔▔▔"                     #8db
+    [alja7]="▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔"   #32db
+    [alja2]="▔▔▔▔▔▔▔▔"                           #8db
 
-    [bal_oldal]="▏"
-    [jobb_oldal]="▕"
+    [baloldal]="▏"
+    [jobboldal]="▕"
 
-    [ures_sor_7_kezd]="                              " #30db space
-    [ures_sor_diff_2]="        "                       #8db space
+    [uressor7kezd]="                              " #30db space
+    [uressordiff2]="        "                       #8db space
 
     [labda]="██"
    
-    [cel_hosszu]="░░░░░░"
-    [cel_rovid]="░░"
+    [celhosszu]="░░░░░░"
+    [celrovid]="░░"
+    [proba]="proba"
 ) #works
 
+##pálya kirajzolása
+
+current_x=7             #egység
+current_y=7             #egység
 
 
 
