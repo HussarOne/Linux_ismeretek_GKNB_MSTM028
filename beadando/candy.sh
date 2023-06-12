@@ -16,9 +16,9 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
 
     if [[ $width -gt 20 ]] || [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
         msg_egy="A terminálnak minimum\n"   
-        msg_ketto=" 34  magasság, \n"
-        msg_harom=" 64 szélesség  \n"
-        msg_negy="     kell!"           #ezt kipróbálni sok space nélkül is
+        msg_ketto=" 34  magasság\n"
+        msg_harom=" 64 szélesség\n"
+        msg_negy="kell!"          
 
         startPoz_egy=$((midWidth-(${#msg_egy}/2)))
         startPoz_ketto=$((midWidth-(${#msg_ketto}/2)))
@@ -39,28 +39,49 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
 
         for((i = 0; i < startPoz_egy; i++))
         do
-            echo -en "\033[1C forward"       #sorban való betekerés helyére
+            echo -en "\033[1C"       #sorban való betekerés helyére
         done
         printf "%s" "$msg_egy"
+        echo -en "\033[0;0H"         #visszamozgatom 0,0-ba a kurzort
 
-        echo -en "\033[1A"                       #1 sor lejjebb léptetése
+        
+
+        for((j = 0; j < midHeight - 1; j++))  #bemozgatás a magasság közepére
+        do
+            echo -en "\033[1A"
+        done
+
         for((i = 0; i < startPoz_ketto; i++))
         do
-            echo -en "\033[1C forward"      #sorban való betekerés helyére
+            echo -en "\033[1C"      #sorban való betekerés helyére
         done
         printf "%s" "$msg_ketto"
+        echo -en "\033[0;0H"         #visszamozgatom 0,0-ba a kurzort
 
-        echo -en "\033[1A"                       #1 sor lejjebb léptetése
+
+
+        for((j = 0; j < midHeight; j++))  #bemozgatás a magasság közepére
+        do
+            echo -en "\033[1A"
+        done
+
         for((i = 0; i < startPoz_harom; i++))
         do
-            echo -en "\033[1C forward"      #sorban való betekerés helyére
+            echo -en "\033[1C"      #sorban való betekerés helyére
         done
         printf "%s" "$msg_harom"
+        echo -en "\033[0;0H"         #visszamozgatom 0,0-ba a kurzort
 
-        echo -en "\033[1A"                        #1 sor lejjebb léptetése
+
+
+        for((j = 0; j < midHeight + 1; j++))  #bemozgatás a magasság közepére
+        do
+            echo -en "\033[1A"
+        done
+
         for((i = 0; i < startPoz_negy; i++))
         do
-            echo -en "\033[1C forward"      #sorban való betekerés helyére
+            echo -en "\033[1C"      #sorban való betekerés helyére
         done
         printf "%s" "$msg_negy"
 

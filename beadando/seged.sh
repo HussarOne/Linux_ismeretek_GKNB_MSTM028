@@ -20,16 +20,26 @@ fele_pont=11
 
 #<$((fele_pont-szoveghossz_fele))>
 
-msg_egy="A terminálnak minimum\n"   
-msg_ketto=" 34  magasság, \n"
-msg_harom=" 64 szélesség  \n"
-msg_negy="     kell!"
+#msg_egy="A terminálnak minimum\n"   
+#msg_ketto=" 34  magasság, \n"
+#msg_harom=" 64 szélesség  \n"
+#msg_negy="     kell!"
 
-hossz_negy=$((10/2))
-midWidth=11
-n=${#msg_negy}
+#hossz_negy=$((10/2))
+#midWidth=11
+#n=${#msg_negy}
 
-startPoz_negy=$((midWidth-(${#msg_negy}/2)))
+#startPoz_negy=$((midWidth-(${#msg_negy}/2)))
 
 
-printf "%s \n" "$startPoz_negy"
+#printf "%s \n" "$startPoz_negy"
+
+function prompt_command {
+let prompt_x=$COLUMNS-50
+}
+szam=15
+#(${prompt_x})
+#echo -en "\033[4;50H"
+#echo -en "\033[4;$((30-20))H" #works!!
+echo -en "\033[4;$((${szam}-3))H" #works!!
+echo "1eee56eee01eee56eee01"
