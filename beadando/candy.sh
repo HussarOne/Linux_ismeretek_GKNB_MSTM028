@@ -99,13 +99,11 @@ while [[ $char != "" ]]; do
 
     read -rsn 1 char
 done
-
-#echo -e  "clear; \033c\e[3J"         #képernyő letisztítása
-#echo -en "\033[1A"                   #kocsi feljebb ugratása 1-el 
-
+            
 #játéktér kirajzolása méretszerűen, procedúrálisan, középre igazítva!!
 #ezután színezése a tereknek, 
 
+##választott játékpálya kimatekozása
 aktualPos=$((aktualPos-7))                  #levonunk 7-et, így 1 és 5 közé esünk a választható opcióknál!
 
 found=0                                     #azért 0, mert TRUE-val negálásra nem reagált jól! Így működik!
@@ -127,9 +125,25 @@ do
 done
 echo -en "\033[13;1H"                       #13. sorra ugrás, majd az elejére, innen írjuk ki a választott pályaméretet szövegesen
 printf "\nA kert pályaméret: %s x %s \n" "$kertMeret" "$kertMeret"
-read -rsn 1 char
+sleep 2
+
+echo -e  "clear; \033c\e[3J"                #képernyő letisztítása
+echo -en "\033[1A"                          #kocsi feljebb ugratása 1-el 
+read -rsn 1 char         
 
 
+##Pálya megalkotása és kirajzolása logika
+hanyszin=3
+labda_actual="██"
+declare -A palya
+
+for((i = 0; i < kertMeret; i++)) do
+    for((j = 0; j < kertMeret; j++)) do
+        palya[$i,$j]=$((RANDOM % hanyszin))
+        echo "${palya[$i,$j]} "
+    done
+    printf "\n"
+done
 
 #méretek pályaméretek esetén:
 #  7 x  7 = 32 széles, 17 magas wo/ írás és pontok és kurzolnav
