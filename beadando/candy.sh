@@ -216,9 +216,9 @@ done
 
 
 ###padló kirajzolása
-echo -n "${palya_elemek[alja7]}"
-for((x=7; x < kertMeret; x+=2)) do
-    echo -n "${palya_elemek[alja2]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
+echo -n "${palya_elemek[aljakezd]}"
+for((x=0; x < kertMeret; x++)) do
+    echo -n "${palya_elemek[aljafolyt]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
 done
 echo "${palya_elemek[aljaveg]}"
 
