@@ -37,11 +37,63 @@ fele_pont=11
 
 
 
-holder=$(tput cols)
-echo $holder
-szam=$(($(tput cols)-50))
+#holder=$(tput cols)
+#echo $holder
+#szam=$(($(tput cols)-50))
 
 #echo -en "\033[4;$((30-20))H" #works!!
-printf "%s \n" "$szam"
-echo -en "\033[4;$((szam-3))H" #works!!
-echo "1eee56eee01eee56eee01"
+#printf "%s \n" "$szam"
+#echo -en "\033[4;$((szam-3))H" #works!!
+#echo "1eee56eee01eee56eee01"
+
+
+fixPos_X=12              #ideálisan a 2. karakterre szeretnénk helyezni mögé a kocsit 
+startPos=8               #8 az első opció!
+maxPos=12                #ennél tovább nem mehet
+minPos=$startPos         #elején ez a minimum is
+aktualPos=$startPos
+
+echo -en "\033[5;12H"
+read -rsn 1 char 
+while [[ $char != "" ]]; do 
+    #printf "%s /t" "${char[1]}"         #13 sor van 
+    if [[ $char = "w" ]]; then
+        if [[ $((aktualPos-1)) -ge minPos ]]; then
+            echo -en "\033[$aktualPos;11H"      #1 karakterrel előrébb lépés, hogy a törlés elkapja a most beírt karaktert
+            echo -en "\033[K"                   #sorvég törlése ami kocsi után van
+
+            aktualPos=$((aktualPos-1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+            echo -en "\033[1A"                  #1 sorral feljebb ugrás
+            echo -en "\033[$aktualPos;12H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        
+        else                    #az az ág, ha nincs hely felfele!
+            echo -en "\033[$aktualPos;11H"      #1 karakterrel előrébb lépés, hogy a törlés elkapja a most beírt karaktert
+            echo -en "\033[K"                   #sorvég törlése ami kocsi után van
+            echo -en "\033[$aktualPos;12H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        fi
+    fi
+
+    if [[ $char = "s" ]]; then
+        if [[ $((aktualPos+1)) -le maxPos ]]; then
+            echo -en "\033[$aktualPos;11H"      #1 karakterrel előrébb lépés, hogy a törlés elkapja a most beírt karaktert
+            echo -en "\033[K"                   #sorvég törlése ami kocsi után van
+
+            aktualPos=$((aktualPos+1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+            echo -en "\033[1B"                  #1 sorral lejebb ugrás
+            echo -en "\033[$aktualPos;12H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        
+        else                    #az az ág, ha nincs hely lefele!
+            echo -en "\033[$aktualPos;11H"      #1 karakterrel előrébb lépés, hogy a törlés elkapja a most beírt karaktert
+            echo -en "\033[K"                   #sorvég törlése ami kocsi után van
+            echo -en "\033[$aktualPos;12H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        fi
+    fi
+
+    if [[ $char != "w" ]] && [[ $char != "s" ]]; then
+        echo -en "\033[$aktualPos;11H"      #1 karakterrel előrébb lépés, hogy a törlés elkapja a most beírt karaktert
+        echo -en "\033[K"                   #sorvég törlése ami kocsi után van
+        echo -en "\033[$aktualPos;12H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+    fi
+
+    read -rsn 1 char
+done
