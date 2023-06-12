@@ -26,3 +26,43 @@ Használt kód tartó:
 
 
 #printf "%s \n" "$username"         #tesztelésre kell csak
+
+#printf "%s /t" "${char[1]}"         #13 sor van 
+
+echo "${startPoz[0]}"
+echo "${startPoz[1]}"
+echo "${startPoz[2]}"
+echo "${startPoz[3]}"
+
+#startPoz_X1=${msg:0:distances[0]}
+#startPoz_X1=$((${#startPoz_X1}/2))
+
+#startPoz_X2=${msg:separatorok[0]:distances[1]}
+#startPoz_X2=$((${#startPoz_X2}/2))
+
+#startPoz_X3=${msg:separatorok[1]:distances[2]}
+#startPoz_X3=$((${#startPoz_X3}/2))
+
+#startPoz_X4=${msg:separatorok[2]:distances[3]}
+#startPoz_X4=$((${#startPoz_X4}/2))
+
+
+#printf "%s\n" "$startPoz_X1" 
+#printf "%s\n" "$startPoz_X2" 
+#printf "%s\n" "$startPoz_X3" 
+#printf "%s\n" "$startPoz_X4" 
+
+printf "%s %d \n" "$midWidth" "$midHeight"
+
+
+ #echo -en "\033[$((midHeight-3));$((startPoz_egy))H"
+        #echo "test behúzás"
+
+        #\033[L;CH  $startPoz_egy
+        #ezen a ponton még mindig tiszta a terminál a kezdeti törlés után!
+        #nem kell 0,0-ra állítani a kurzort, hisz ott van!
+        #echo -en "\033[4;$((szam-3))H"
+        #\033[1A down
+        #\033[1C forward
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

@@ -13,50 +13,44 @@ minMag=34   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
 if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
     midWidth=$((width/2))
     midHeight=$((height/2))
-    printf "%s %d \n" "$midWidth" "$midHeight"
-
-    if [[ $width -gt 20 ]] || [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
-        msg="A terminálnak minimum 34 magasságra 64 szélességre van szüksége"
-        
-        msg_egy="A terminálnak minimum"   
-        msg_ketto=" 34  magasság"
-        msg_harom=" 64 szélesség"
-        msg_negy=" kell!"          
-
-        startPoz_egy=$((midWidth-(${#msg_egy}/2)))
-        startPoz_ketto=$((midWidth-(${#msg_ketto}/2)))
-        startPoz_harom=$((midWidth-(${#msg_harom}/2)))
-        startPoz_negy=$((midWidth-(${#msg_negy}/2)))
-
-        printf "%s %s %s %s \n" "$startPoz_egy" "$startPoz_ketto" "$startPoz_harom" "$startPoz_negy"
-        #echo -en "\033[$((midHeight-3));$((startPoz_egy))H"
-        #echo "test behúzás"
-
-        #\033[L;CH  $startPoz_egy
-        #ezen a ponton még mindig tiszta a terminál a kezdeti törlés után!
-        #nem kell 0,0-ra állítani a kurzort, hisz ott van!
-        #echo -en "\033[4;$((szam-3))H"
-        #\033[1A down
-        #\033[1C forward
-
-        #bemozgatás a magasság közepe előtti 2. sorra, kezdő pozira a sorban
-        echo -en "\033[$((midHeight-1));$((startPoz_egy))H"  
-        printf "%s\n" "$msg_egy"
     
-        echo -en "\033[$((midHeight));$((startPoz_ketto))H" 
-        printf "%s\n" "$msg_ketto"
-        
-        echo -en "\033[$((midHeight+1));$((startPoz_harom))H" 
-        printf "%s\n" "$msg_harom"
-        
-        echo -en "\033[$((midHeight+2));$((startPoz_negy))H" 
-        printf "%s\n" "$msg_negy"
+    if [[ $width -gt 20 ]] || [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
+        msg="A terminálnak minimum 34  magasság 64 szélesség kell!"
+
+        separatorok=(21 34 47 53)
+        distances=(
+            [0]=$((separatorok[0]-0))
+            [1]=$((separatorok[1]-separatorok[0]))
+            [2]=$((separatorok[2]-separatorok[1]))
+            [3]=$((separatorok[3]-separatorok[2]))
+        )
+
+        Msges=(
+            [0]=${msg:0:distances[0]}
+            [1]=${msg:separatorok[0]:distances[1]}
+            [2]=${msg:separatorok[1]:distances[2]}
+            [3]=${msg:separatorok[2]:distances[3]}
+        )
+            
+        startPoz=(
+            [0]=$((midWidth-(${#Msges[0]}/2)))
+            [1]=$((midWidth-(${#Msges[1]}/2)))
+            [2]=$((midWidth-(${#Msges[2]}/2)))
+            [3]=$((midWidth-(${#Msges[3]}/2)))
+        )        
+
+        vertIdx=(-1 0 1 2)
+        for((i = 0; i < ${#Msges[@]}; i++))
+        do
+            echo -en "\033[$((midHeight+(${vertIdx[i]})));$((startPoz[i]))H"  
+            printf "%s\n" "${Msges[i]}"
+        done
 
     else                                                #az az ág ahol nincs hely kiírni a tájékoztatást
         echo "A játéknak több helyre van szüksége a terminálon!"
     fi
 
-    read -r -n 1 char
+    read -rsn 1 char
     exit 1
 fi 
 
