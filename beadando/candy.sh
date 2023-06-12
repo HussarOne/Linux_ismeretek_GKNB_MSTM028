@@ -189,18 +189,9 @@ palya_elemek=(
 
 ###tető elvégzése:
 
-
-echo -n "${palya_elemek[tetokezd]}"       #mindneképpen kirajzoljuk
-for((x=0; x < kertMeret; x++)) do
-    echo -n "${palya_elemek[tetofolyt]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
-done
-echo "${palya_elemek[tetoveg]}"
-
-###pályatest kirajzolása:
-
 declare -A magassagok
 
-magassagok=(
+magassagok=(                              #magasságok a test kirajzolásához lookup table
     [7]=17
     [9]=21
     [11]=25
@@ -208,7 +199,13 @@ magassagok=(
     [15]=33
 )
 
-#echo "${magassagok[$kertMeret]}"
+echo -n "${palya_elemek[tetokezd]}"        #mindneképpen kirajzoljuk
+for((x=0; x < kertMeret; x++)) do
+    echo -n "${palya_elemek[tetofolyt]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
+done
+echo "${palya_elemek[tetoveg]}"
+
+###pályatest kirajzolása:
 
 for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
     echo -n "${palya_elemek[balol]}"   #bal oldal kirajzolása
@@ -225,7 +222,6 @@ for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
     echo -n "${palya_elemek[szunet]}"  #szünet a jobb oldali elemig
     echo "${palya_elemek[jobol]}"      #jobb oldal kirajzolása
 done
-
 
 ###padló kirajzolása
 echo -n "${palya_elemek[aljakezd]}"
