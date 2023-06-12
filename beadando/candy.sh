@@ -3,6 +3,35 @@
 echo -e  "clear; \033c\e[3J"         #képernyő letisztítása
 echo -en "\033[1A"                   #kocsi feljebb ugratása 1-el 
 
+width=$(tput cols)                   #megadja hány oszlopos a terminálunk
+height=$(tput lines)                 #megadja hány    soros a terminálunk
+                                     #továbbá: echo mentesen adja meg! nem kell törölni!
+
+if [[ $height -lt 25 ]]; then
+    midWidth=$((width/2))
+    midHeight=$((height/2))
+
+    msg="A terminálnak legalább "
+fi
+
+#pályatervek!
+                          9    11    13    15    17
+ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ 
+ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ 
+ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ 
+ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ 
+ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ 
+
+ █▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋  
+
+
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+▏   ░░░░░░                                                            ▕
+▏ ██░░██░░██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕  
+▏   ░░░░░░                                                            ▕ 
+▏ ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+▏                                                                     ▕ 
+▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
 #név beolvasása
 printf "Add meg a neved! \nneved: " 
 read -r username
@@ -21,15 +50,6 @@ do
     printf "\n%s. %s x %s" "$((i+1))" "$aktualMeret" "$aktualMeret"
 done
 printf "\n"
-
-#karakter irányításhoz beolvasás
-#read -r -n 1 char
-#while [[ $char -ne "" ]]; do          # addig megyünk amíg nem entert kapunk!    
-#    if [[ ${char[1]} = "w" ]]; then 
-#        printf "\033[<N>A" 
-#    fi
-#    
-#done
 
 fixPos_X=12              #ideálisan a 2. karakterre szeretnénk helyezni mögé a kocsit 
 startPos=8               #8 az első opció!
@@ -87,13 +107,3 @@ done
 echo -e  "clear; \033c\e[3J"         #képernyő letisztítása
 echo -en "\033[1A"                   #kocsi feljebb ugratása 1-el 
 printf "kijutottam enterrel! \n"
-
-#\033[L;CH          kocsi pozicióba mozgatása, Sor; Oszlop koordináták
-#\033[L;Cf          ugyan az de más a vége, ezt is kipróbálom
-#\033[K             sor végének törlése!
-#\033[2J            minden törlése, 0,0 pozira ugratja a kurzort
-#echo -e 'clear; \033c\e[3J'        működő képernyő törlése!
-# ^[[A felfele
-# ^[[B lefele
-# ^[[C jobbra
-# ^[[D ballra

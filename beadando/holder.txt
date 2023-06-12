@@ -11,7 +11,18 @@ https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
 \033[<N>A
 
 
-
+#\033[L;CH          kocsi pozicióba mozgatása, Sor; Oszlop koordináták
+#\033[L;Cf          ugyan az de más a vége, ezt is kipróbálom
+#\033[K             sor végének törlése!
+#\033[2J            minden törlése, 0,0 pozira ugratja a kurzort
+#echo -e 'clear; \033c\e[3J'        működő képernyő törlése!
+# ^[[A felfele
+# ^[[B lefele
+# ^[[C jobbra
+# ^[[D ballra
 
 Használt kód tartó:
 #printf "%s \n" "${char[1]}"
+
+
+#printf "%s \n" "$username"         #tesztelésre kell csak
