@@ -140,7 +140,7 @@ declare -A palya
 for((i = 0; i < kertMeret; i++)) do
     for((j = 0; j < kertMeret; j++)) do
         palya[$i,$j]=$((RANDOM % hanyszin))
-        echo "${palya[$i,$j]} "
+        printf "%s" "${palya[$i,$j]}"
     done
     printf "\n"
 done
