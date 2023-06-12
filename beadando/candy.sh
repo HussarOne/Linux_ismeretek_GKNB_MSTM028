@@ -172,8 +172,8 @@ palya_elemek=(
     [alja2]="▔▔▔▔▔▔▔▔"                           #8db
     [aljaveg]="▔▔ "                              #2db töltes, 1db space
 
-    [baloldal]="▕"
-    [jobboldal]="▏"
+    [balol]="▕"
+    [jobol]="▏"
 
     [uressor7kezd]="                              " #30db space
     [uressordiff2]="        "                       #8db space
@@ -185,22 +185,23 @@ palya_elemek=(
     [proba]="proba"
 ) #works
 
-##pálya kirajzolása
+##pálya kirajzolása:
 
-            
-            
+###tető elvégzése:
 
 echo "${palya_elemek[teto7]}"       #mindneképpen kirajzoljuk
-for((x=7; x < kertMeret; x++)) do
-
+for((x=7; x < kertMeret; x+=2)) do
+    echo "${palya_elemek[teto2]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
 done
+echo "${palya_elemek[tetoveg]}"
 
+###pályatest kirajzolása:
 
-current_y=1      #egység(sor)
+current_y=1       #egység(sor)
 for((current_y; current_y < kertMeret; current_y++)) do
     current_x=1   #egység(cella)
     for((current_x; current_x < kertMeret; current_x++)) do
-
+        echo "${palya_elemek[]}"
 
 
     done
