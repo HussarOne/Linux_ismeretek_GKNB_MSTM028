@@ -1,21 +1,76 @@
 #!/bin/bash
 
-echo -e  "clear; \033c\e[3J"         #képernyő letisztítása
-echo -en "\033[1A"                   #kocsi feljebb ugratása 1-el 
+echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
+echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
 
-width=$(tput cols)                   #megadja hány oszlopos a terminálunk
-height=$(tput lines)                 #megadja hány    soros a terminálunk
-                                     #továbbá: echo mentesen adja meg! nem kell törölni!
+width=$(tput cols)                  #megadja hány oszlopos a terminálunk
+height=$(tput lines)                #megadja hány    soros a terminálunk
+                                    #továbbá: echo mentesen adja meg! nem kell törölni!
 
 minSzel=64  #pálya max szélessége 15 x 15-nél
 minMag=34   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
 
-if [[ $height -lt 25 ]]; then
-    midWidth=$((width/2))
+if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
+    midWidth=$((width/2 + 1))
     midHeight=$((height/2))
 
-    msg="A terminálnak legalább "
-fi
+    if [[ $width -gt 20 ]] || [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
+        msg_egy="A terminálnak minimum\n"   
+        msg_ketto=" 34  magasság, \n"
+        msg_harom=" 64 szélesség  \n"
+        msg_negy="     kell!"           #ezt kipróbálni sok space nélkül is
+
+        startPoz_egy=$((midWidth-(${#msg_egy}/2)))
+        startPoz_ketto=$((midWidth-(${#msg_ketto}/2)))
+        startPoz_harom=$((midWidth-(${#msg_harom}/2)))
+        startPoz_negy=$((midWidth-(${#msg_negy}/2)))
+
+        #\033[L;CH 
+        #ezen a ponton még mindig tiszta a terminál a kezdeti törlés után!
+        #nem kell 0,0-ra állítani a kurzort, hisz ott van!
+        #echo -en "\033[0;0H"  
+        #\033[1A down
+        #\033[1C forward
+
+        for((j = 0; j < midHeight - 2; j++))  #bemozgatás a magasság közepére
+        do
+            echo -en "\033[1A"
+        done
+
+        for((i = 0; i < startPoz_egy; i++))
+        do
+            echo -en "\033[1C forward"       #sorban való betekerés helyére
+        done
+        printf "%s" "$msg_egy"
+
+        echo -en "\033[1A"                       #1 sor lejjebb léptetése
+        for((i = 0; i < startPoz_ketto; i++))
+        do
+            echo -en "\033[1C forward"      #sorban való betekerés helyére
+        done
+        printf "%s" "$msg_ketto"
+
+        echo -en "\033[1A"                       #1 sor lejjebb léptetése
+        for((i = 0; i < startPoz_harom; i++))
+        do
+            echo -en "\033[1C forward"      #sorban való betekerés helyére
+        done
+        printf "%s" "$msg_harom"
+
+        echo -en "\033[1A"                        #1 sor lejjebb léptetése
+        for((i = 0; i < startPoz_negy; i++))
+        do
+            echo -en "\033[1C forward"      #sorban való betekerés helyére
+        done
+        printf "%s" "$msg_negy"
+
+    else                                                #az az ág ahol nincs hely kiírni a tájékoztatást
+        echo "A játéknak több helyre van szüksége a terminálon!"
+    fi
+
+    read -r -n 1 char
+    exit 1
+fi 
 
 #pályatervek:
 #szükséges karakterek:
@@ -25,39 +80,42 @@ fi
 # ▔  felső nyolcad (alulra!)
 # █   teli   blokk (belülre, 2x, ez a labda)
 # ░  félig   blokk (célzókereszt, négyzet vastagsága 8 környező blokkban)
-▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-▏    ░░░░░░                 7       9      11      13      15  ▕
-▏  ██░░██░░██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏    ░░░░░░                                                    ▕   
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕                                 ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕ 
-▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕
-▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+
+#
+#▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁#
+#▏    ░░░░░░                 7       9      11      13      15  ▕
+#▏  ██░░██░░██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏    ░░░░░░                                                    ▕   
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕                                 ▕ 
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏7 ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏9 ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏11██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏13██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕ 
+#▏15██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+#▏                                                              ▕
+#▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+
 #név beolvasása
 printf "Add meg a neved! \nneved: " 
 read -r username
