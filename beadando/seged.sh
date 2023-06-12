@@ -34,12 +34,13 @@ fele_pont=11
 
 #printf "%s \n" "$startPoz_negy"
 
-function prompt_command {
-let prompt_x=$COLUMNS-50
-}
+prompt_x=$COLUMNS-50
+
 szam=15
+szam_ketto=$(($(echo $COLUMNS)+20))
 #(${prompt_x})
 #echo -en "\033[4;50H"
 #echo -en "\033[4;$((30-20))H" #works!!
-echo -en "\033[4;$((${szam}-3))H" #works!!
+printf "%s \n" "$szam_ketto"
+echo -en "\033[4;$((${szam_ketto}-3))H" #works!!
 echo "1eee56eee01eee56eee01"
