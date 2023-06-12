@@ -37,7 +37,9 @@ fele_pont=11
 prompt_x=$COLUMNS-50
 
 szam=15
-szam_ketto=$(($(echo $COLUMNS)+20))
+holder=$(tput cols)
+echo $holder
+szam_ketto=$(($(tput cols)-50))
 #(${prompt_x})
 #echo -en "\033[4;50H"
 #echo -en "\033[4;$((30-20))H" #works!!
