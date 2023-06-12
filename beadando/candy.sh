@@ -133,7 +133,6 @@ read -rsn 1 char
 
 
 ##Pálya megalkotása és kirajzolása logika
-labda_actual="██"
 declare -A palya
 
 hanyszin=3
@@ -161,6 +160,26 @@ for((i = 0; i < kertMeret; i++)) do
     done
     printf "\n"
 done
+
+palya_elemek=(
+    [teto_7]="▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁"  #32db
+    [teto_diff_2]="▁▁▁▁▁▁▁▁"                     #8db, ennyinként növekedik a pálya!
+
+    [alja_7]="▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔"  #32db
+    [alja_diff_2]="▔▔▔▔▔▔▔▔"                     #8db
+
+    [bal_oldal]="▏"
+    [jobb_oldal]="▕"
+
+    [ures_sor_7_kezd]="                              " #30db space
+    [ures_sor_diff_2]="        "                       #8db space
+
+    [labda]="██"
+   
+    [cel_hosszu]="░░░░░░"
+    [cel_rovid]="░░"
+) #works
+
 
 
 
