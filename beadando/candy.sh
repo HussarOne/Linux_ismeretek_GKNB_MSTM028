@@ -7,6 +7,9 @@ width=$(tput cols)                   #megadja hány oszlopos a terminálunk
 height=$(tput lines)                 #megadja hány    soros a terminálunk
                                      #továbbá: echo mentesen adja meg! nem kell törölni!
 
+minSzel=64  #pálya max szélessége 15 x 15-nél
+minMag=34   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
+
 if [[ $height -lt 25 ]]; then
     midWidth=$((width/2))
     midHeight=$((height/2))
@@ -24,13 +27,19 @@ fi
 
  █▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋█▋  
 
-
+#szükséges karakterek:
+# ▁   alsó nyolcad (felülre!)
+# ▏    bal nyolcad (bal oldalra)
+# ▕   jobb nyolcad (jobb oldalra)
+# ▔  felső nyolcad (alulra!)
+# █   teli   blokk (belülre, 2x, ez a labda)
+# ░  félig   blokk (célzókereszt, négyzet vastagsága 8 környező blokkban)
 ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
 ▏    ░░░░░░                                                    ▕
-▏  ██░░██░░██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕  
-▏    ░░░░░░                                                    ▕     
+▏  ██░░██░░██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
+▏    ░░░░░░                                                    ▕   
 ▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
-▏                                                              ▕                                                                       ▕ 
+▏                                                              ▕                                 ▕ 
 ▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
 ▏                                                              ▕ 
 ▏  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
@@ -67,7 +76,7 @@ printf "\nNavigálni a W: felfele és S:lefele gombokkal lehet!"
 printf "\nPályaméret választáshoz navigálj a kívánt számra és ENTER!"
 
 printf "\n\nPályaméret lehetőségek:"
-minMeret=11                         #pálya minimum mérete, szimmetrikus
+minMeret=7                          #pálya minimum mérete, szimmetrikus
 enlarge=2                           #opcióknál ennyivel növeljük a méretet szimmetrikusan
 aktualMeret=$minMeret               #ez az aktuális méret amit kiírunk választhatónak
 for ((i=0; i < 5; i++)) 
