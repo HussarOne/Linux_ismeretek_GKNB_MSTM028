@@ -208,7 +208,9 @@ magassagok=(
     [15]=33
 )
 
-for((current_y = 1; current_y < magassagok[kertMeret] ; current_y++)) do
+#echo "${magassagok[$kertMeret]}"
+
+for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
     echo -n "${palya_elemek[balol]}"   #bal oldal kirajzolása
 
     for((current_x = 0; current_x < kertMeret; current_x++)) do
