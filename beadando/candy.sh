@@ -164,49 +164,64 @@ done
 declare -A palya_elemek                          #asszociatív array
 
 palya_elemek=(
-    [teto7]=" ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁"   #31db töltés, 1db space
-    [teto2]="▁▁▁▁▁▁▁▁"                           #8db, ennyinként növekedik a pálya!
-    [tetoveg]="▁▁ "                              #2db töltés, 1db space a végén
+    [tetokezd]=" "                    #1db space, 
+    [tetofolyt]="▁▁▁▁"                #4db töltés, fedez egy albdát és egy közt
+    [tetoveg]="▁▁ "                   #1db space, 2db töltés - a négyzetek után tölt és hagy helyet oldalszegélynek
 
-    [alja7]=" ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔"   #31db töltés, 1db space
-    [alja2]="▔▔▔▔▔▔▔▔"                           #8db
-    [aljaveg]="▔▔ "                              #2db töltes, 1db space
+    [aljakezd]=" "                    #1db space,
+    [aljafolyt]="▔▔▔▔"                #4db töltés, fedez egy labdát és egy közt
+    [aljaveg]="▔▔ "                   #1db space, 2db töltés - a négyzetek után tölt és hagy helyet oldalszegénynek
 
     [balol]="▕"
     [jobol]="▏"
 
-    [uressor7kezd]="                              " #30db space
-    [uressordiff2]="        "                       #8db space
+    #[uressor7kezd]="                              " #30db space
+    #[uressordiff2]="        "                       #8db space
+                
+    [labda]="██"                    #2db teli blokk
+    [szunet]="  "                   #2db space
 
-    [labda]="██"
-   
-    [celhosszu]="░░░░░░"
-    [celrovid]="░░"
-    [proba]="proba"
+    [celhosszu]="░░░░░░"            #6db részleges blokk
+    [celrovid]="░░"                 #2db részleges blokk
 ) #works
 
 ##pálya kirajzolása:
 
 ###tető elvégzése:
 
-echo "${palya_elemek[teto7]}"       #mindneképpen kirajzoljuk
-for((x=7; x < kertMeret; x+=2)) do
-    echo "${palya_elemek[teto2]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
+
+echo -n "${palya_elemek[tetokezd]}"       #mindneképpen kirajzoljuk
+for((x=0; x < kertMeret; x++)) do
+    echo -n "${palya_elemek[tetofolyt]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
 done
 echo "${palya_elemek[tetoveg]}"
 
 ###pályatest kirajzolása:
 
-current_y=1       #egység(sor)
-for((current_y; current_y < kertMeret; current_y++)) do
-    current_x=1   #egység(cella)
-    for((current_x; current_x < kertMeret; current_x++)) do
-        echo "${palya_elemek[]}"
+for((current_y = 1; current_y < kertMeret; current_y++)) do
+    echo -n "${palya_elemek[balol]}"   #bal oldal kirajzolása
 
-
+    for((current_x = 0; current_x < kertMeret; current_x++)) do
+        echo -n "${palya_elemek[szunet]}"            #szünet az első négyzetig
+        if [[ $((current_y % 2)) -eq 0 ]]; then      #ha a sor páros, akkor labda sor
+            echo -n "${palya_elemek[labda]}"         #labda nyomtatása
+        else
+            echo -n "${palya_elemek[szunet]}"        #páratlan esetben ez egy üres sor
+        fi
     done
+
+    echo -n "${palya_elemek[szunet]}"  #szünet a jobb oldali elemig
+    echo "${palya_elemek[jobol]}"      #jobb oldal kirajzolása
 done
-echo "${palya_elemek[alja7]}"
+
+
+###padló kirajzolása
+echo -n "${palya_elemek[alja7]}"
+for((x=7; x < kertMeret; x+=2)) do
+    echo -n "${palya_elemek[alja2]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
+done
+echo "${palya_elemek[aljaveg]}"
+
 
 #méretek pályaméretek esetén:
 #  7 x  7 = 32 széles, 17 magas wo/ írás és pontok és kurzolnav
