@@ -34,15 +34,14 @@ fele_pont=11
 
 #printf "%s \n" "$startPoz_negy"
 
-prompt_x=$COLUMNS-50
 
-szam=15
+
+
 holder=$(tput cols)
 echo $holder
-szam_ketto=$(($(tput cols)-50))
-#(${prompt_x})
-#echo -en "\033[4;50H"
+szam=$(($(tput cols)-50))
+
 #echo -en "\033[4;$((30-20))H" #works!!
-printf "%s \n" "$szam_ketto"
-echo -en "\033[4;$((${szam_ketto}-3))H" #works!!
+printf "%s \n" "$szam"
+echo -en "\033[4;$((szam-3))H" #works!!
 echo "1eee56eee01eee56eee01"
