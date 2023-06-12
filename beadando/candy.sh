@@ -8,14 +8,14 @@ height=$(tput lines)                #megadja hány    soros a terminálunk
                                     #továbbá: echo mentesen adja meg! nem kell törölni!
 
 minSzel=64  #pálya max szélessége 15 x 15-nél
-minMag=34   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
+minMag=40   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
 
 if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
     midWidth=$((width/2))
     midHeight=$((height/2))
     
     if [[ $width -gt 20 ]] && [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
-        msg="A terminálnak minimum 34  magasság 64 szélesség kell!"
+        msg="A terminálnak minimum $minMag  magasság $minSzel szélesség kell!"
 
         separatorok=(21 34 47 53)
         distances=(
@@ -53,6 +53,91 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
     read -rsn 1 char
     exit 1
 fi 
+
+#név beolvasása
+printf "Add meg a neved! \nneved: " 
+read -r username
+
+#pálya elkészítéshez információk
+printf "\nNavigálni a W: felfele és S:lefele gombokkal lehet!"
+printf "\nPályaméret választáshoz navigálj a kívánt számra és ENTER!"
+
+printf "\n\nPályaméret lehetőségek:"
+minMeret=7                          #pálya minimum mérete, szimmetrikus
+enlarge=2                           #opcióknál ennyivel növeljük a méretet szimmetrikusan
+aktualMeret=$minMeret               #ez az aktuális méret amit kiírunk választhatónak
+for ((i=0; i < 5; i++)) 
+do
+    aktualMeret=$((minMeret + enlarge*i))
+    printf "\n%s. %s x %s" "$((i+1))" "$aktualMeret" "$aktualMeret"
+done
+printf "\n"
+
+fix_X=12                 #ideálisan a 2. karakterre szeretnénk helyezni mögé a kocsit 
+startPos=8               #8 az első opció!
+maxPos=12                #ennél tovább nem mehet
+minPos=$startPos         #elején ez a minimum is
+aktualPos=$startPos      #kezetben 8-ra rakjuk, így a startposnál van!
+
+echo -en "\033[$startPos;$((fix_X))H"            #Kocsi hátramozgatása, így nem írok bele a szövegbe
+read -rsn 1 char                         #ciklust indító kezdő beolvasás
+
+while [[ $char != "" ]]; do 
+   if [[ $char = "w" ]]; then
+        if [[ $((aktualPos-1)) -ge minPos ]]; then
+            aktualPos=$((aktualPos-1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+            echo -en "\033[$aktualPos;$((fix_X))H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        fi
+    fi
+
+    if [[ $char = "s" ]]; then
+        if [[ $((aktualPos+1)) -le maxPos ]]; then
+            aktualPos=$((aktualPos+1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+            echo -en "\033[$aktualPos;$((fix_X))H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        fi
+    fi
+
+    read -rsn 1 char
+done
+
+#echo -e  "clear; \033c\e[3J"         #képernyő letisztítása
+#echo -en "\033[1A"                   #kocsi feljebb ugratása 1-el 
+
+#játéktér kirajzolása méretszerűen, procedúrálisan, középre igazítva!!
+#ezután színezése a tereknek, 
+
+aktualPos=$((aktualPos-7))                  #levonunk 7-et, így 1 és 5 közé esünk a választható opcióknál!
+
+found=0                                     #azért 0, mert TRUE-val negálásra nem reagált jól! Így működik!
+k=0
+while [[ $k -lt 6 ]] && [[ $found -ne 1 ]]  
+do
+    k=$((k+1))
+    if [[ $k -eq $aktualPos ]]; then
+        found=1
+    fi
+done
+
+kertMeret=$((minMeret-2))                   # A legkisebb pályaméret -2 kell, hogy ha az első opció 1-es érzékével növelünk akkor 7 x 7 legyen!
+for((i = 1; i < 6; i++))
+do
+    if [[ $i -lt $k ]] || [[ $i -eq $k ]]; then
+        kertMeret=$((kertMeret+2))
+    fi
+done
+echo -en "\033[13;1H"                       #13. sorra ugrás, majd az elejére, innen írjuk ki a választott pályaméretet szövegesen
+printf "\nA kert pályaméret: %s x %s \n" "$kertMeret" "$kertMeret"
+read -rsn 1 char
+
+
+
+#méretek pályaméretek esetén:
+#  7 x  7 = 32 széles, 17 magas wo/ írás és pontok és kurzolnav
+#  9 x  9 = 40 széles, 21 magas wo/
+# 11 x 11 = 48 széles, 25 magas wo/
+# 13 x 13 = 56 széles, 29 magas wo/
+# 15 x 15 = 64 széles, 33 magas wo/
+
 
 #pályatervek:
 #szükséges karakterek:
@@ -97,52 +182,3 @@ fi
 #▏15██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▕
 #▏                                                              ▕
 #▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
-
-#név beolvasása
-printf "Add meg a neved! \nneved: " 
-read -r username
-
-#pálya elkészítéshez információk
-printf "\nNavigálni a W: felfele és S:lefele gombokkal lehet!"
-printf "\nPályaméret választáshoz navigálj a kívánt számra és ENTER!"
-
-printf "\n\nPályaméret lehetőségek:"
-minMeret=7                          #pálya minimum mérete, szimmetrikus
-enlarge=2                           #opcióknál ennyivel növeljük a méretet szimmetrikusan
-aktualMeret=$minMeret               #ez az aktuális méret amit kiírunk választhatónak
-for ((i=0; i < 5; i++)) 
-do
-    aktualMeret=$((minMeret + enlarge*i))
-    printf "\n%s. %s x %s" "$((i+1))" "$aktualMeret" "$aktualMeret"
-done
-printf "\n"
-
-fix_X=12              #ideálisan a 2. karakterre szeretnénk helyezni mögé a kocsit 
-startPos=8               #8 az első opció!
-maxPos=12                #ennél tovább nem mehet
-minPos=$startPos         #elején ez a minimum is
-aktualPos=$startPos      #kezetben 8-ra rakjuk, így a startposnál van!
-
-echo -en "\033[$startPos;$((fix_X))H"            #Kocsi hátramozgatása, így nem írok bele a szövegbe
-read -rsn 1 char                         #ciklust indító kezdő beolvasás
-
-while [[ $char != "" ]]; do 
-   if [[ $char = "w" ]]; then
-        if [[ $((aktualPos-1)) -ge minPos ]]; then
-            aktualPos=$((aktualPos-1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
-            echo -en "\033[$aktualPos;$((fix_X))H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
-        fi
-    fi
-
-    if [[ $char = "s" ]]; then
-        if [[ $((aktualPos+1)) -le maxPos ]]; then
-            aktualPos=$((aktualPos+1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
-            echo -en "\033[$aktualPos;$((fix_X))H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
-        fi
-    fi
-
-    read -rsn 1 char
-done
-
-echo -e  "clear; \033c\e[3J"         #képernyő letisztítása
-echo -en "\033[1A"                   #kocsi feljebb ugratása 1-el 
