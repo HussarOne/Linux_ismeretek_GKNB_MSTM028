@@ -133,17 +133,36 @@ read -rsn 1 char
 
 
 ##Pálya megalkotása és kirajzolása logika
-hanyszin=3
 labda_actual="██"
 declare -A palya
 
+hanyszin=3
+szinek=(
+    [0]="r"     #red
+    [1]="y"     #yellow
+    [2]="b"     #blue
+)   
+
 for((i = 0; i < kertMeret; i++)) do
     for((j = 0; j < kertMeret; j++)) do
-        palya[$i,$j]=$((RANDOM % hanyszin))
+        holder=$((RANDOM % hanyszin))
+
+        h=0
+        found_h=0 
+        while [[ h -lt hanyszin ]] && [[ found_h -ne 1 ]]
+        do
+            if [[ $h -eq $holder ]]; then
+                palya[$i,$j]=${szinek[h]}
+            fi
+            h=$((h+1))
+        done
+
         printf "%s" "${palya[$i,$j]}"
     done
     printf "\n"
 done
+
+
 
 #méretek pályaméretek esetén:
 #  7 x  7 = 32 széles, 17 magas wo/ írás és pontok és kurzolnav
