@@ -177,8 +177,6 @@ colorTable=(            #bg = background  fg = foreground
     [fg_yellow]="\033[1;93m"     #untested
 )
 
-
-
 echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
 echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
 
@@ -188,7 +186,6 @@ height=$(tput lines)                #megadja hány    soros a terminálunk
 
 changeTerminalBGColor "bg_black" "$width" "$height" "1"    #works
 
-
 minSzel=64  #pálya max szélessége 15 x 15-nél
 minMag=40   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
 
@@ -196,7 +193,8 @@ midWidth=$((width/2))               #terminál széelsségének a fele
 midHeight=$((height/2))             #terminál magasságának fele
 
 if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
-    if [[ $width -gt 20 ]] && [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
+    #az az ág ahol van hely kiírni a tájékoztatást
+    if [[ $width -gt 20 ]] && [[ $height -gt 3 ]]; then 
         msg="A terminálnak minimum $minMag  magasság $minSzel szélesség kell!"
 
         separatorok=(21 34 47 53)
@@ -224,11 +222,11 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
         vertIdx=(-1 0 1 2)
         for((i = 0; i < ${#Msges[@]}; i++))
         do
-            echo -en "\033[$((midHeight+vertIdx[i]));$((startPoz[i]))H"  
+            echo -en "\033[$((midHeight+vertIdx[i]));$((startPoz[i]))H"  #needs testing after change!
             printf "%s\n" "${Msges[i]}"
         done
 
-    else                                                #az az ág ahol nincs hely kiírni a tájékoztatást
+    else    #az az ág ahol nincs hely kiírni a tájékoztatást
         echo "A játéknak több helyre van szüksége a terminálon!"
     fi
 
@@ -290,8 +288,7 @@ aktualPos=$((aktualPos-7))                  #levonunk 7-et, így 1 és 5 közé 
 
 found=0                                     #azért 0, mert TRUE-val negálásra nem reagált jól! Így működik!
 k=0
-while [[ $k -lt 6 ]] && [[ $found -ne 1 ]]  
-do
+while [[ $k -lt 6 ]] && [[ $found -ne 1 ]]; do
     k=$((k+1))
     if [[ $k -eq $aktualPos ]]; then
         found=1
@@ -299,13 +296,12 @@ do
 done
 
 kertMeret=$((minMeret-2))                   # A legkisebb pályaméret -2 kell, hogy ha az első opció 1-es érzékével növelünk akkor 7 x 7 legyen!
-for((i = 1; i < 6; i++))
-do
+for ((i = 1; i < 6; i++)) do
     if [[ $i -lt $k ]] || [[ $i -eq $k ]]; then
         kertMeret=$((kertMeret+2))
     fi
 done
-echo -en "\033[13;1H"                       #13. sorra ugrás, majd az elejére, innen írjuk ki a választott pályaméretet szövegesen
+echo -en "\033[13;1H"                      #13. sorra ugrás, majd az elejére, innen írjuk ki a választott pályaméretet szövegesen
 printf "\nA kert pályaméret: %s x %s \n" "$kertMeret" "$kertMeret"
 sleep 2
 
@@ -315,7 +311,7 @@ echo -e "clear; \033c\e[3J"                #képernyő letisztítása
 # Háttér visszafeketítése törlés után
 changeTerminalBGColor "bg_black" "$width" "$height" "1" 
 
-##Pálya megalkotása és kirajzolása logika
+## Pálya megalkotása és kirajzolása logika
 hanyszin=3
 szinek=(
     [0]="r"     #red
@@ -340,8 +336,6 @@ for((i = 0; i < kertMeret; i++)) do
     done
 done
 
-
-
 palya_elemek=(
     [tetokezd]=" "                    #1db space, 
     [tetofolyt]="▁▁▁▁"                #4db töltés, fedez egy albdát és egy közt
@@ -354,16 +348,15 @@ palya_elemek=(
     [balol]="▕"
     [jobol]="▏"
                 
-    [labda]="██"                    #2db teli blokk
-    [szunet]="  "                   #2db space
+    [labda]="██"                      #2db teli blokk
+    [szunet]="  "                     #2db space
 
-    [celhosszu]="░░░░░░"            #6db részleges blokk
-    [celrovid]="░░"                 #2db részleges blokk
+    [celhosszu]="░░░░░░"              #6db részleges blokk
+    [celrovid]="░░"                   #2db részleges blokk
 ) #works
 
 ## pálya kirajzolása:
-                      #szélességek a test kirajzolásához lookup table
-magassagok=(                                #magasságok a test kirajzolásához lookup table
+magassagok=(       #magasságok a test kirajzolásához lookup table
     [7]=17
     [9]=21
     [11]=25
@@ -371,9 +364,7 @@ magassagok=(                                #magasságok a test kirajzolásához
     [15]=33
 )
 
-
-
-szelessegek=(
+szelessegek=(       #szélességek a test kirajzolásához lookup table
     [7]=32
     [9]=40
     [11]=48
@@ -382,15 +373,13 @@ szelessegek=(
 )
 
 ### magasság matek:
-#terminál magasságának fele - táblamagasság fele really..
-helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)))
+helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)))       #terminál magasságának fele-táblamagasság fele really..
 
 ### szélesség matek:
-#terminál szélességének fele - táblaméret fele really..
-helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)))
+helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)))       #terminál szélességének fele-táblaszélesség fele really..
 
 ### Középre helyezés pozícionálása
-echo -en "\033[$helyez_Y;$((helyez_X))H"    
+echo -en "\033[$((helyez_Y));$((helyez_X))H"    
 
 ### tető kirajzolása:
 echo -n "${palya_elemek[tetokezd]}"               #mindneképpen kirajzoljuk
@@ -429,8 +418,7 @@ for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
             echo -n "${palya_elemek[labda]}"         #labda nyomtatása adott színnel
 
             #szín visszaállítása
-            changeTerminalFGColor "fg_white" "$width" "$height"
-
+            changeTerminalFGColor "fg_white" "$width" "$height" "0"
         else
             echo -n "${palya_elemek[szunet]}"        #páratlan esetben ez egy üres sor
         fi
@@ -464,44 +452,43 @@ helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modif
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
 Y_null=$((helyez_Y-1))                                   #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
 X_null=$((helyez_X))                                     #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
-Y_max=$((helyez_Y+1+(($kertMeret-1)*2)))     #helyez_Y-ban benne van, hogy már 1!
-X_max=$((helyez_X+1+(($kertMeret-1)*2)))     #helyez_X-ben benne van, hogy már 1!
+Y_max=$((helyez_Y+(($kertMeret-1)*2)))     #helyez_Y-ban benne van, hogy már 1!
+X_max=$((helyez_X+(($kertMeret-1)*4)))     #helyez_X-ben benne van, hogy már 1!
 
 echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
-echo -en "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
+echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
               
 echo -en "\033[$((helyez_Y+1));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
-echo -en "${palya_elemek[celrovid]}"                      #célkereszt rövid részének első része
+echo -en "${palya_elemek[celrovid]}"                     #célkereszt rövid részének első része
 
 echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"         #X pozi pseudo betolása, hogy a labda másik oldalán is megrajzoljuk a célkereszt rövid részét 
-echo -en "${palya_elemek[celrovid]}"                      #célkereszt rövid részének második része
+echo -en "${palya_elemek[celrovid]}"                     #célkereszt rövid részének második része
 
 echo -en "\033[$((helyez_Y+2));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
-echo -en "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
+echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
 
-#cserélni
-echo -en "\033[$((dock_Y));$((dock_X))H"                 #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
+DockCursor "$dock_Y" "$dock_X"                           #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
 
 
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
 while [[ $char != "" ]]; do 
     if [[ $char = "w" ]]; then
-        if [[ $((helyez_Y-2)) -gt $Y_null ]]; then
+        if [[ $((helyez_Y-2)) -ge $Y_null ]]; then
             AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
     fi
 
     if [[ $char = "s" ]]; then
-        if [[ $((helyez_Y+2)) -lt $Y_max ]]; then 
+        if [[ $((helyez_Y+2)) -le $Y_max ]]; then 
             AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
     fi
 
-    if [[ $char = "d" ]]; then
-        if [[ $((helyez_X-4)) -lt $X_null ]]; then 
+    if [[ $char = "a" ]]; then
+        if [[ $((helyez_X-4)) -ge $X_null ]]; then 
             AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
     fi
 
-    if [[ $char = "a" ]]; then
-        if [[ $((helyez_X+4)) -lt $X_max ]]; then 
+    if [[ $char = "d" ]]; then
+        if [[ $((helyez_X+4)) -le $X_max ]]; then 
             AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
     fi
 
