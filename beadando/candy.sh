@@ -497,17 +497,20 @@ while [[ $char != "" ]]; do
 
     read -rsn 1 char
 done
-
 read -rsn 1 char
 
+echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
+echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
 
+#-------------------------------------------------------------------
+# tervezési area
+#-------------------------------------------------------------------
 #méretek pályaméretek esetén:
 #  7 x  7 = 32 széles, 17 magas wo/ írás és pontok és kurzolnav
 #  9 x  9 = 40 széles, 21 magas wo/
 # 11 x 11 = 48 széles, 25 magas wo/
 # 13 x 13 = 56 széles, 29 magas wo/
 # 15 x 15 = 64 széles, 33 magas wo/
-
 
 #pályatervek:
 #szükséges karakterek:
