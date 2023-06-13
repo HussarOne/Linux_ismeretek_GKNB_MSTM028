@@ -74,7 +74,7 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
         vertIdx=(-1 0 1 2)
         for((i = 0; i < ${#Msges[@]}; i++))
         do
-            echo -en "\033[$((midHeight+(${vertIdx[i]})));$((startPoz[i]))H"  
+            echo -en "\033[$((midHeight+vertIdx[i]));$((startPoz[i]))H"  
             printf "%s\n" "${Msges[i]}"
         done
 
@@ -245,8 +245,6 @@ helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)))
 
 ### Középre helyezés pozícionálása
 echo -en "\033[$helyez_Y;$((helyez_X))H"    
-
-### --- ezen a ponton a foreground color még mindig fehér ---
 
 ### tető kirajzolása:
 echo -n "${palya_elemek[tetokezd]}"               #mindneképpen kirajzoljuk
