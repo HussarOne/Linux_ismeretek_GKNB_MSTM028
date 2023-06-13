@@ -65,4 +65,7 @@ printf "%s %d \n" "$midWidth" "$midHeight"
         #\033[1A down
         #\033[1C forward
 
+    #echo -en "\033[1;1H"            #terminál kocsi 1,1-es helyre ugratása festés után
+
+
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

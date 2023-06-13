@@ -1,10 +1,20 @@
 #!/bin/bash
 
-function backgroundToBlack {
-    ### Szín teszt beállítása
-    echo -en "\033[40m"
-    sorHolder=""
+declare -A colorTable
 
+colorTable=(            #bg = background  fg = foreground
+    [bg_black]="\033[40m"        #works 
+    [fg_white]="\033[1;97m"      #untested
+    [fg_red]="\033[1;91m"        #works
+    [fg_blue]="\033[1;94m"       #untested
+    [fg_yellow]="\033[1;93m"     #untested
+)
+
+function changeTerminalBGColor {
+    ### Szín teszt beállítása
+    echo -en "${colorTable[$1]}"
+    sorHolder=""
+    
     for((i = 0; i < width; i++)) do
         sorHolder=$sorHolder" "     #festő sor minta
     done
@@ -12,10 +22,11 @@ function backgroundToBlack {
     for((j = 0; j <= height; j++)) do
         echo "$sorHolder"           #sorok nyomtatása amíg van magasság
     done
-
-    echo -en "\033[1;1H"            #terminál kocsi 1,1-es helyre ugratása festés után
 }
 
+function changeTerminalFGColor {
+    echo -en "${colorTable[$1]}" ### Szín teszt beállítása
+}
 
 echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
 echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
@@ -24,8 +35,9 @@ width=$(tput cols)                  #megadja hány oszlopos a terminálunk
 height=$(tput lines)                #megadja hány    soros a terminálunk
                                     #továbbá: echo mentesen adja meg! nem kell törölni!
 
-backgroundToBlack "$width", "$height" #works
 
+changeTerminalBGColor "bg_black" "$width" "$height"     #works
+echo -en "\033[1;1H"                                  #terminál kocsi 1,1-es helyre ugratása festés után
 
 minSzel=64  #pálya max szélessége 15 x 15-nél
 minMag=40   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
@@ -147,12 +159,12 @@ echo -en "\033[13;1H"                       #13. sorra ugrás, majd az elejére,
 printf "\nA kert pályaméret: %s x %s \n" "$kertMeret" "$kertMeret"
 sleep 2
 
-echo -e  "clear; \033c\e[3J"                #képernyő letisztítása
-echo -en "\033[1A"                          #kocsi feljebb ugratása 1-el 
+echo -e "clear; \033c\e[3J"                #képernyő letisztítása
+#echo -en "\033[1A"                        #kocsi feljebb ugratása 1-el 
 
-backgroundToBlack "$width", "$height"       #háttér visszafeketítése törlés után
-
-
+# Háttér visszafeketítése törlés után
+changeTerminalBGColor "bg_black" "$width" "$height"     #colorholder továbbra is feketén van!
+echo -en "\033[1;1H"                                  #terminál kocsi 1,1-es helyre ugratása festés után
 
 ##Pálya megalkotása és kirajzolása logika
 declare -A palya
@@ -164,6 +176,7 @@ szinek=(
     [2]="b"     #blue
 )   
 
+## pálya labda színeinek kisorsolása
 for((i = 0; i < kertMeret; i++)) do
     for((j = 0; j < kertMeret; j++)) do
         holder=$((RANDOM % hanyszin))
@@ -233,6 +246,7 @@ helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)))
 ### Középre helyezés pozícionálása
 echo -en "\033[$helyez_Y;$((helyez_X))H"    
 
+### --- ezen a ponton a foreground color még mindig fehér ---
 
 ### tető kirajzolása:
 echo -n "${palya_elemek[tetokezd]}"               #mindneképpen kirajzoljuk
@@ -251,10 +265,26 @@ for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
     for((current_x = 0; current_x < kertMeret; current_x++)) do
         echo -n "${palya_elemek[szunet]}"            #szünet az első négyzetig
         if [[ $((current_y % 2)) -eq 0 ]]; then      #ha a sor páros, akkor labda sor
-            
-            
-            echo -n "${palya_elemek[labda]}"         #labda nyomtatása
+           
+            #szín beállítása pirosra ha "r" a sorsolt érték
+            if [[ ${palya[$((current_y-1)),$current_x]} = "r" ]]; then
+                changeTerminalFGColor "fg_red" "$width" "$height"
+            fi
 
+            #szín beállítása pirosra ha "y" a sorsolt érték
+            if [[ ${palya[$((current_y-1)),$current_x]} = "y" ]]; then
+                changeTerminalFGColor "fg_yellow" "$width" "$height"
+            fi
+
+            #szín beállítása pirosra ha "b" a sorsolt érték
+            if [[ ${palya[$((current_y-1)),$current_x]} = "b" ]]; then
+                changeTerminalFGColor "fg_blue" "$width" "$height"
+            fi
+
+            echo -n "${palya_elemek[labda]}"         #labda nyomtatása adott színnel
+
+            #szín visszaállítása
+            changeTerminalFGColor "fg_white", "$width", "$height"
         else
             echo -n "${palya_elemek[szunet]}"        #páratlan esetben ez egy üres sor
         fi
