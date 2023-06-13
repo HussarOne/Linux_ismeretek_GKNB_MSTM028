@@ -109,3 +109,13 @@ function AimLower() {   #újrarajzolni részeket!
     
     echo -resn "$helyez_Y"; 
 }
+
+echo $helyez_Y
+echo $Y_null
+echo $Y_max
+
+echo 
+
+echo $helyez_X
+echo $X_null
+echo $X_max

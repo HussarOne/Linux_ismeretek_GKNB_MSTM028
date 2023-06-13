@@ -48,6 +48,7 @@ function AimLower() {   #újrarajzolni részeket!
    
     #először törölni az eddigit:
     #felső elemek törlése
+    echo -en "\033[$((helyez_Y));$((helyez_X))H"
     echo -en "${palya_elemek[szunet]}${palya_elemek[szunet]}${palya_elemek[szunet]}"
 
     #középső sor, bal rövid rész törlése
@@ -75,11 +76,12 @@ function AimLower() {   #újrarajzolni részeket!
     echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
     echo -en "${palya_elemek[celhosszu]}"
     
-    echo -en "\c$helyez_Y"; 
+    #echo -en "\c$helyez_Y"; 
+    #return $hel
 }
 function AimHigher() { 
     #először törölni az eddigit:
-    echo -n "ahb"
+
     #törölni az alsó részeket:
     #alsó sor, hosszú törlése
     echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
@@ -110,7 +112,7 @@ function AimHigher() {
     echo -en "\033[$((helyez_Y));$((helyez_X))H"
     echo -en "${palya_elemek[celhosszu]}"
  
-    echo -en "\c$helyez_Y";
+    #echo -en "\c$helyez_Y";
 }
 function AimRight() { true;}
 function AimLeft() { true;}
@@ -410,44 +412,43 @@ helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modif
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
 Y_null=$((helyez_Y-1))                                   #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
 X_null=$((helyez_X))                                     #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
-Y_max=$((helyez_Y + ((kertMeret-1) * 2)+1))     #helyez_Y-ban benne van, hogy már 1!
-X_max=$((helyez_X + ((kertMeret-1) * 2)+1))     #helyez_X-ben benne van, hogy már 1!
-
+Y_max=$((helyez_Y+1+(($kertMeret-1)*2)))     #helyez_Y-ban benne van, hogy már 1!
+X_max=$((helyez_X+1+(($kertMeret-1)*2)))     #helyez_X-ben benne van, hogy már 1!
 
 echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
-echo -n "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
+echo -en "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
               
 echo -en "\033[$((helyez_Y+1));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
-echo -n "${palya_elemek[celrovid]}"                      #célkereszt rövid részének első része
+echo -en "${palya_elemek[celrovid]}"                      #célkereszt rövid részének első része
 
 echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"         #X pozi pseudo betolása, hogy a labda másik oldalán is megrajzoljuk a célkereszt rövid részét 
-echo -n "${palya_elemek[celrovid]}"                      #célkereszt rövid részének második része
+echo -en "${palya_elemek[celrovid]}"                      #célkereszt rövid részének második része
 
 echo -en "\033[$((helyez_Y+2));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
-echo -n "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
+echo -en "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
 
 #cserélni
 echo -en "\033[$((dock_Y));$((dock_X))H"                 #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
 
 
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
-
 while [[ $char != "" ]]; do 
    if [[ $char = "w" ]]; then
-        if [[ $((helyez_Y-2)) -gt Y_null ]]; then
-            helyez_Y=$(AimHigher "$helyez_Y")
-            #DockCursor "$dock_Y" "$dock_X"
-            echo -en "\033[$((dock_Y));$((dock_X))H"; 
-        fi
+        if [[ $((helyez_Y-2)) -gt $Y_null ]]; then
+            AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
+            
+            #echo -en "\033[$((dock_Y));$((dock_X))H"; 
+        #fi
     fi
 
     if [[ $char = "s" ]]; then
-        if [[ $((helyez_Y+2)) -lt Y_max ]]; then
-            helyez_Y=$(AimLower "$helyez_Y")
-            #DockCursor "$dock_Y" "$dock_X"
+        if [[ $((helyez_Y+2)) -lt $Y_max ]]; then
+            AimLower "$helyez_Y"
             echo -en "\033[$((dock_Y));$((dock_X))H"; 
         fi
     fi
+
+
 
     read -rsn 1 char
 done
