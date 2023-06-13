@@ -13,15 +13,19 @@ colorTable=(            #bg = background  fg = foreground
 function changeTerminalBGColor {
     ### Szín teszt beállítása
     echo -en "${colorTable[$1]}"
-    sorHolder=""
     
-    for((i = 0; i < width; i++)) do
-        sorHolder=$sorHolder" "     #festő sor minta
-    done
+    if [[ $4 -eq 1 ]]; then             #csak akkor telítjük a lapot és ugrunk vissza 1,1 re ha a user kérte!
+        sorHolder=""
+        for((i = 0; i < width; i++)) do
+            sorHolder=$sorHolder" "     #festő sor minta
+        done
 
-    for((j = 0; j <= height; j++)) do
-        echo "$sorHolder"           #sorok nyomtatása amíg van magasság
-    done
+        for((j = 0; j <= height; j++)) do
+            echo "$sorHolder"           #sorok nyomtatása amíg van magasság
+        done
+
+        echo -en "\033[1;1H"        #terminál kocsi 1,1-es helyre ugratása festés után
+    fi
 }
 
 function changeTerminalFGColor {
@@ -35,9 +39,8 @@ width=$(tput cols)                  #megadja hány oszlopos a terminálunk
 height=$(tput lines)                #megadja hány    soros a terminálunk
                                     #továbbá: echo mentesen adja meg! nem kell törölni!
 
+changeTerminalBGColor "bg_black" "$width" "$height" "1"    #works
 
-changeTerminalBGColor "bg_black" "$width" "$height"     #works
-echo -en "\033[1;1H"                                  #terminál kocsi 1,1-es helyre ugratása festés után
 
 minSzel=64  #pálya max szélessége 15 x 15-nél
 minMag=40   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
@@ -163,8 +166,7 @@ echo -e "clear; \033c\e[3J"                #képernyő letisztítása
 #echo -en "\033[1A"                        #kocsi feljebb ugratása 1-el 
 
 # Háttér visszafeketítése törlés után
-changeTerminalBGColor "bg_black" "$width" "$height"     #colorholder továbbra is feketén van!
-echo -en "\033[1;1H"                                  #terminál kocsi 1,1-es helyre ugratása festés után
+changeTerminalBGColor "bg_black" "$width" "$height" "1" 
 
 ##Pálya megalkotása és kirajzolása logika
 declare -A palya
@@ -304,16 +306,45 @@ done
 ### padló kirajzolása
 echo -n "${palya_elemek[aljakezd]}"
 for((x=0; x < kertMeret; x++)) do
-    echo -n "${palya_elemek[aljafolyt]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
+    echo -n "${palya_elemek[aljafolyt]}"               #kért méretig kitölteni a tetővel, kettesével ugrunk
 done
 echo "${palya_elemek[aljaveg]}"
 
-helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
-echo -en "\033[$((helyez_Y));1H"            #itt azért 1H mert a sor elejére akarunk jutni 
+helyez_Y=$((helyez_Y+1))                                #sorral lejjebb akarjuk állítani 
+echo -en "\033[$((helyez_Y));1H"                        #itt azért 1H mert a sor elejére akarunk jutni 
 
+### célkereszt felrajzolása!
+saved_Y=$helyez_Y                                        #reszet előtt elmentjük a hasznos értéket, hogy hová kell lőni a kurzort
+helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modify
+helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
+
+echo -en "\033[$((helyez_Y));$((helyez_X))H" 
+echo -n "${palya_elemek[celhosszu]}"
+
+helyez_Y=$((helyez_Y+1))
+echo -en "\033[$((helyez_Y));$((helyez_X))H" 
+echo -n "${palya_elemek[celrovid]}"
+
+echo -en "\033[$((helyez_Y));$((helyez_X+4))H"
+echo -n "${palya_elemek[celrovid]}"
+
+helyez_Y=$((helyez_Y+1))
+echo -en "\033[$((helyez_Y));$((helyez_X))H" 
+echo -n "${palya_elemek[celhosszu]}"
+
+echo -en "\033[$((saved_Y));1H"
 read -rsn 1 char
 
 
+
+
+
+
+
+
+
+
+read -rsn 1 char
 
 
 
