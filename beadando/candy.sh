@@ -41,11 +41,8 @@ function LowerThreeLines() { true;}
 function IsItOnMap() { return 1;}
 function IsItAlive() { return 1;}
 
-#### functionok, mint célkereszt mozgatása következik!
+#### functionok, melyek a célkereszthez kellenek!
 function AimLower() {   #újrarajzolni részeket!
-    #fontos: lehet, hogy nem lesz szép mert flickerelni fog, ebben az esetben
-    #lehet próbálkozni pl: képernyő befagyasztással, vagy teljes újrarajzolással...
-   
     #először törölni az eddigit:
     #felső elemek törlése
     echo -en "\033[$((helyez_Y));$((helyez_X))H"
@@ -75,14 +72,9 @@ function AimLower() {   #újrarajzolni részeket!
     #also sor, hosszú 6-as írása
     echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
     echo -en "${palya_elemek[celhosszu]}"
-    
-    #echo -en "\c$helyez_Y"; 
-    #return $hel
 }
 function AimHigher() { 
     #először törölni az eddigit:
-
-    #törölni az alsó részeket:
     #alsó sor, hosszú törlése
     echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
     echo -en "${palya_elemek[szunet]}${palya_elemek[szunet]}${palya_elemek[szunet]}"
@@ -111,11 +103,71 @@ function AimHigher() {
     #felső sor, hosszú 6-as írása
     echo -en "\033[$((helyez_Y));$((helyez_X))H"
     echo -en "${palya_elemek[celhosszu]}"
- 
-    #echo -en "\c$helyez_Y";
 }
-function AimRight() { true;}
-function AimLeft() { true;}
+function AimRight() { 
+    #először törölni az eddigit:
+    #balról a sorból,a hosszúból 4 törlése -> 2 szünet
+    echo -en "\033[$((helyez_Y));$((helyez_X))H"
+    echo -en "${palya_elemek[szunet]}${palya_elemek[szunet]}"
+
+    #középső sor, bal oldal törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -en "${palya_elemek[szunet]}"
+
+    #középső sor, jobb oldal törlése
+    #nincs mert az a másik oldal balja lesz majd!
+
+    #also sor balról 4 törlése, azaz 2 szünet
+    echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
+    echo -en "${palya_elemek[szunet]}${palya_elemek[szunet]}"
+
+    #utána felrajzolni a következőt:
+    helyez_X=$((helyez_X+4))
+
+    #felső sor tovább nyomtatása 2 kijelöléssel, azaz 4 karakterrel
+    echo -en "\033[$((helyez_Y));$((helyez_X+2))H"
+    echo -en "${palya_elemek[celrovid]}${palya_elemek[celrovid]}"
+
+    #középső sor, jobb rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -en "${palya_elemek[celrovid]}"
+
+    #also sor, 4 karakter, vagyis 2 celrovid írása
+    echo -en "\033[$((helyez_Y+2));$((helyez_X+2))H"
+    echo -en "${palya_elemek[celrovid]}${palya_elemek[celrovid]}"
+}
+function AimLeft() { 
+    #először törölni az eddigit:
+    #jobbról a sorból,a hosszúból 4 törlése -> 2 szünet
+    echo -en "\033[$((helyez_Y));$((helyez_X+2))H"
+    echo -en "${palya_elemek[szunet]}${palya_elemek[szunet]}"
+
+    #középső sor, bal oldal törlése
+    #nincs mert az a másik oldal jobbja lesz majd!
+
+    #középső sor, jobb oldal törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -en "${palya_elemek[szunet]}"
+
+    #also sor jobbról 4 törlése, azaz 2 szünet
+    echo -en "\033[$((helyez_Y+2));$((helyez_X+2))H"
+    echo -en "${palya_elemek[szunet]}${palya_elemek[szunet]}"
+
+    #utána felrajzolni a következőt:
+    helyez_X=$((helyez_X-4))
+
+    #felső sor tovább nyomtatása 2 kijelöléssel, azaz 4 karakterrel
+    echo -en "\033[$((helyez_Y));$((helyez_X))H"
+    echo -en "${palya_elemek[celrovid]}${palya_elemek[celrovid]}"
+
+    #középső sor, bal rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -en "${palya_elemek[celrovid]}"
+
+    #also sor, 4 karakter, vagyis 2 celrovid írása
+    echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
+    echo -en "${palya_elemek[celrovid]}${palya_elemek[celrovid]}"
+}
 
 colorTable=(            #bg = background  fg = foreground
     [bg_black]="\033[40m"        #works 
@@ -433,22 +485,25 @@ echo -en "\033[$((dock_Y));$((dock_X))H"                 #előzőleg már az alj
 
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
 while [[ $char != "" ]]; do 
-   if [[ $char = "w" ]]; then
+    if [[ $char = "w" ]]; then
         if [[ $((helyez_Y-2)) -gt $Y_null ]]; then
             AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
-            
-            #echo -en "\033[$((dock_Y));$((dock_X))H"; 
-        #fi
     fi
 
     if [[ $char = "s" ]]; then
-        if [[ $((helyez_Y+2)) -lt $Y_max ]]; then
-            AimLower "$helyez_Y"
-            echo -en "\033[$((dock_Y));$((dock_X))H"; 
-        fi
+        if [[ $((helyez_Y+2)) -lt $Y_max ]]; then 
+            AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
     fi
 
+    if [[ $char = "d" ]]; then
+        if [[ $((helyez_X-4)) -lt $X_null ]]; then 
+            AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
+    fi
 
+    if [[ $char = "a" ]]; then
+        if [[ $((helyez_X+4)) -lt $X_max ]]; then 
+            AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
+    fi
 
     read -rsn 1 char
 done
