@@ -320,6 +320,7 @@ szinek=(
     [0]="r"     #red
     [1]="y"     #yellow
     [2]="b"     #blue
+    [99]=" "    #üres labda
 )   
 
 ## pálya labda színeinek kisorsolása
