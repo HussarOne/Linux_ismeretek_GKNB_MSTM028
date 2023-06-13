@@ -13,7 +13,6 @@ colorTable=(            #bg = background  fg = foreground
 
 changeTerminalColor() {
     ### Szín teszt beállítása
-
     echo -en "${colorTable[$1]}"
     sorHolder=""
 

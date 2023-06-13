@@ -73,3 +73,39 @@ echo -en "\033[$((helyez_Y));$((helyez_X))H" #visszalépés a 12-es X koordinát
 helyez_Y=$((helyez_Y+2))                 #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
 echo -en "\033[$((helyez_Y));$((helyez_X))H"     #visszalépés a 12-es X koordinátára ugyan abban a sorban
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+function AimLower() {   #újrarajzolni részeket!
+    #fontos: lehet, hogy nem lesz szép mert flickerelni fog, ebben az esetben
+    #lehet próbálkozni pl: képernyő befagyasztással, vagy teljes újrarajzolással...
+
+    #először törölni az eddigit:
+    #felső elemek törlése
+    echo -en "${palya_elemek[szunet]}${palya_elemek[szunet]}${palya_elemek[szunet]}"
+
+    #középső sor, bal rövid rész törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -en "${palya_elemek[szunet]}"
+
+    #középső sor, jobb rövid rész törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -en "${palya_elemek[szunet]}"
+
+    #-> nincs +2-es nyomtatás, hiszen az alsó a kövi felsője lesz!
+
+    #utána felrajzolni a következőt:
+    helyez_Y=$((helyez_Y+2))
+
+    #középső sor, bal rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -en "${palya_elemek[celrovid]}"
+
+    #középső sor, jobb rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -en "${palya_elemek[celrovid]}"
+
+    #also sor, hosszú 6-as írása
+    echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
+    echo -en "${palya_elemek[celhosszu]}"
+    
+    echo -resn "$helyez_Y"; 
+}
