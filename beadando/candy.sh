@@ -220,9 +220,8 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
         )        
 
         vertIdx=(-1 0 1 2)
-        for((i = 0; i < ${#Msges[@]}; i++))
-        do
-            echo -en "\033[$((midHeight+vertIdx[i]));$((startPoz[i]))H"  #needs testing after change!
+        for ((i = 0; i < ${#Msges[@]}; i++)) do
+            echo -en "\033[$((midHeight+vertIdx[i]));$((startPoz[i]))H"  #works
             printf "%s\n" "${Msges[i]}"
         done
 
@@ -231,6 +230,10 @@ if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
     fi
 
     read -rsn 1 char
+
+    echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
+    echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
+
     exit 1
 fi 
 
