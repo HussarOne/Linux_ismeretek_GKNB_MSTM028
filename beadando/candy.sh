@@ -1,11 +1,31 @@
 #!/bin/bash
 
+function backgroundToBlack {
+    ### Szín teszt beállítása
+    echo -en "\033[40m"
+    sorHolder=""
+
+    for((i = 0; i < width; i++)) do
+        sorHolder=$sorHolder" "     #festő sor minta
+    done
+
+    for((j = 0; j <= height; j++)) do
+        echo "$sorHolder"           #sorok nyomtatása amíg van magasság
+    done
+
+    echo -en "\033[1;1H"            #terminál kocsi 1,1-es helyre ugratása festés után
+}
+
+
 echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
 echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
 
 width=$(tput cols)                  #megadja hány oszlopos a terminálunk
 height=$(tput lines)                #megadja hány    soros a terminálunk
                                     #továbbá: echo mentesen adja meg! nem kell törölni!
+
+backgroundToBlack "$width", "$height" #works
+
 
 minSzel=64  #pálya max szélessége 15 x 15-nél
 minMag=40   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
@@ -129,7 +149,9 @@ sleep 2
 
 echo -e  "clear; \033c\e[3J"                #képernyő letisztítása
 echo -en "\033[1A"                          #kocsi feljebb ugratása 1-el 
-#read -rsn 1 char         
+
+backgroundToBlack "$width", "$height"       #háttér visszafeketítése törlés után
+
 
 
 ##Pálya megalkotása és kirajzolása logika
@@ -210,6 +232,7 @@ helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)))
 
 ### Középre helyezés pozícionálása
 echo -en "\033[$helyez_Y;$((helyez_X))H"    
+
 
 ### tető kirajzolása:
 echo -n "${palya_elemek[tetokezd]}"               #mindneképpen kirajzoljuk
