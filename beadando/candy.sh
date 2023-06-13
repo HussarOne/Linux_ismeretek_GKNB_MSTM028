@@ -259,6 +259,7 @@ helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állí
 echo -en "\033[$((helyez_Y));$((helyez_X))H"      #visszalökés itt történik meg, egy sorral lejjebb
 
 ### pályatest kirajzolása:
+Y_rowCount=0
 for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
     echo -n "${palya_elemek[balol]}"   #bal oldal kirajzolása
 
@@ -267,31 +268,36 @@ for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
         if [[ $((current_y % 2)) -eq 0 ]]; then      #ha a sor páros, akkor labda sor
            
             #szín beállítása pirosra ha "r" a sorsolt érték
-            if [[ ${palya[$((current_y-1)),$current_x]} = "r" ]]; then
+            if [[ ${palya[$Y_rowCount,$current_x]} = "r" ]]; then
                 changeTerminalFGColor "fg_red" "$width" "$height"
             fi
 
             #szín beállítása pirosra ha "y" a sorsolt érték
-            if [[ ${palya[$((current_y-1)),$current_x]} = "y" ]]; then
+            if [[ ${palya[$Y_rowCount,$current_x]} = "y" ]]; then
                 changeTerminalFGColor "fg_yellow" "$width" "$height"
             fi
 
             #szín beállítása pirosra ha "b" a sorsolt érték
-            if [[ ${palya[$((current_y-1)),$current_x]} = "b" ]]; then
+            if [[ ${palya[$Y_rowCount,$current_x]} = "b" ]]; then
                 changeTerminalFGColor "fg_blue" "$width" "$height"
             fi
 
             echo -n "${palya_elemek[labda]}"         #labda nyomtatása adott színnel
 
             #szín visszaállítása
-            changeTerminalFGColor "fg_white", "$width", "$height"
+            changeTerminalFGColor "fg_white" "$width" "$height"
+
         else
             echo -n "${palya_elemek[szunet]}"        #páratlan esetben ez egy üres sor
         fi
     done
 
-    echo -n "${palya_elemek[szunet]}"                #szünet a jobb oldali elemig
-    echo "${palya_elemek[jobol]}"                    #jobb oldal kirajzolása
+    if [[ $((current_y % 2)) -eq 0 ]]; then
+        Y_rowCount=$((Y_rowCount+1))                  #páros ágon vagyunk, tehát itt vannak csak golyók, itt kell nöcelni
+    fi
+
+    echo -n "${palya_elemek[szunet]}"                 #szünet a jobb oldali elemig
+    echo "${palya_elemek[jobol]}"                     #jobb oldal kirajzolása
 
     helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
     echo -en "\033[$((helyez_Y));$((helyez_X))H"      #visszalökés itt történik meg, egy sorral lejjebb
