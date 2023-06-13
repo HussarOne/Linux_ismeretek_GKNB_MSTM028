@@ -10,10 +10,10 @@ height=$(tput lines)                #megadja hány    soros a terminálunk
 minSzel=64  #pálya max szélessége 15 x 15-nél
 minMag=40   #lehet hogy csak 32 dunno, majd alaposabban átszámolom
 
+midWidth=$((width/2))               #terminál széelsségének a fele
+midHeight=$((height/2))             #terminál magasságának fele
+
 if [[ $width -lt $minSzel ]] || [[ $height -lt $minMag ]]; then
-    midWidth=$((width/2))
-    midHeight=$((height/2))
-    
     if [[ $width -gt 20 ]] && [[ $height -gt 3 ]]; then #az az ág ahol van hely kiírni a tájékoztatást
         msg="A terminálnak minimum $minMag  magasság $minSzel szélesség kell!"
 
@@ -155,10 +155,7 @@ for((i = 0; i < kertMeret; i++)) do
             fi
             h=$((h+1))
         done
-
-        #printf "%s" "${palya[$i,$j]}"
     done
-    #printf "\n"
 done
 
 declare -A palya_elemek                          #asszociatív array
@@ -174,9 +171,6 @@ palya_elemek=(
 
     [balol]="▕"
     [jobol]="▏"
-
-    #[uressor7kezd]="                              " #30db space
-    #[uressordiff2]="        "                       #8db space
                 
     [labda]="██"                    #2db teli blokk
     [szunet]="  "                   #2db space
@@ -185,13 +179,10 @@ palya_elemek=(
     [celrovid]="░░"                 #2db részleges blokk
 ) #works
 
-##pálya kirajzolása:
-
-###tető elvégzése:
-
+## pálya kirajzolása:
 declare -A magassagok
 
-magassagok=(                              #magasságok a test kirajzolásához lookup table
+magassagok=(                                #magasságok a test kirajzolásához lookup table
     [7]=17
     [9]=21
     [11]=25
@@ -199,36 +190,81 @@ magassagok=(                              #magasságok a test kirajzolásához l
     [15]=33
 )
 
-echo -n "${palya_elemek[tetokezd]}"        #mindneképpen kirajzoljuk
+declare -A szelessegek                      #szélességek a test kirajzolásához lookup table
+
+szelessegek=(
+    [7]=32
+    [9]=40
+    [11]=48
+    [13]=56
+    [15]=64
+)
+
+### magasság matek:
+#terminál magasságának fele - táblamagasság fele really..
+helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)))
+
+### szélesség matek:
+#terminál szélességének fele - táblaméret fele really..
+helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)))
+
+### Középre helyezés pozícionálása
+echo -en "\033[$helyez_Y;$((helyez_X))H"    
+
+### tető kirajzolása:
+echo -n "${palya_elemek[tetokezd]}"               #mindneképpen kirajzoljuk
 for((x=0; x < kertMeret; x++)) do
-    echo -n "${palya_elemek[tetofolyt]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
+    echo -n "${palya_elemek[tetofolyt]}"          #kért méretig kitölteni a tetővel, kettesével ugrunk
 done
 echo "${palya_elemek[tetoveg]}"
 
-###pályatest kirajzolása:
+helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
+echo -en "\033[$((helyez_Y));$((helyez_X))H"      #visszalökés itt történik meg, egy sorral lejjebb
 
+### pályatest kirajzolása:
 for((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
     echo -n "${palya_elemek[balol]}"   #bal oldal kirajzolása
 
     for((current_x = 0; current_x < kertMeret; current_x++)) do
         echo -n "${palya_elemek[szunet]}"            #szünet az első négyzetig
         if [[ $((current_y % 2)) -eq 0 ]]; then      #ha a sor páros, akkor labda sor
+            
+            
             echo -n "${palya_elemek[labda]}"         #labda nyomtatása
+
         else
             echo -n "${palya_elemek[szunet]}"        #páratlan esetben ez egy üres sor
         fi
     done
 
-    echo -n "${palya_elemek[szunet]}"  #szünet a jobb oldali elemig
-    echo "${palya_elemek[jobol]}"      #jobb oldal kirajzolása
+    echo -n "${palya_elemek[szunet]}"                #szünet a jobb oldali elemig
+    echo "${palya_elemek[jobol]}"                    #jobb oldal kirajzolása
+
+    helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
+    echo -en "\033[$((helyez_Y));$((helyez_X))H"      #visszalökés itt történik meg, egy sorral lejjebb
 done
 
-###padló kirajzolása
+### padló kirajzolása
 echo -n "${palya_elemek[aljakezd]}"
 for((x=0; x < kertMeret; x++)) do
     echo -n "${palya_elemek[aljafolyt]}"   #kért méretig kitölteni a tetővel, kettesével ugrunk
 done
 echo "${palya_elemek[aljaveg]}"
+
+helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
+echo -en "\033[$((helyez_Y));1H"            #itt azért 1H mert a sor elejére akarunk jutni 
+
+read -rsn 1 char
+
+
+
+
+
+
+
+
+
+
 
 
 #méretek pályaméretek esetén:
