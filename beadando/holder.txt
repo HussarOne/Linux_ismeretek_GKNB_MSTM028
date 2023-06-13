@@ -67,5 +67,9 @@ printf "%s %d \n" "$midWidth" "$midHeight"
 
     #echo -en "\033[1;1H"            #terminál kocsi 1,1-es helyre ugratása festés után
 
+helyez_Y=$((helyez_Y-2))                     #2-vel lépünk felfele, ez 1 labda magassága és 1 sor magassága - alapvetően a labda feletti sor bal felső karakterén állunk          
+echo -en "\033[$((helyez_Y));$((helyez_X))H" #visszalépés a 12-es X koordinátára ugyan abban a sorban
 
+helyez_Y=$((helyez_Y+2))                 #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+echo -en "\033[$((helyez_Y));$((helyez_X))H"     #visszalépés a 12-es X koordinátára ugyan abban a sorban
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

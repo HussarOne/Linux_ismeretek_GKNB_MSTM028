@@ -114,21 +114,21 @@ maxPos=12                #ennél tovább nem mehet
 minPos=$startPos         #elején ez a minimum is
 aktualPos=$startPos      #kezetben 8-ra rakjuk, így a startposnál van!
 
-echo -en "\033[$startPos;$((fix_X))H"            #Kocsi hátramozgatása, így nem írok bele a szövegbe
-read -rsn 1 char                         #ciklust indító kezdő beolvasás
+echo -en "\033[$startPos;$((fix_X))H"                 #Kocsi hátramozgatása, így nem írok bele a szövegbe
+read -rsn 1 char                                      #ciklust indító kezdő beolvasás
 
 while [[ $char != "" ]]; do 
    if [[ $char = "w" ]]; then
         if [[ $((aktualPos-1)) -ge minPos ]]; then
-            aktualPos=$((aktualPos-1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
-            echo -en "\033[$aktualPos;$((fix_X))H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+            aktualPos=$((aktualPos-1))                #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+            echo -en "\033[$aktualPos;$((fix_X))H"    #visszalépés a 12-es X koordinátára ugyan abban a sorban
         fi
     fi
 
     if [[ $char = "s" ]]; then
         if [[ $((aktualPos+1)) -le maxPos ]]; then
-            aktualPos=$((aktualPos+1))          #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
-            echo -en "\033[$aktualPos;$((fix_X))H"      #visszalépés a 12-es X koordinátára ugyan abban a sorban
+            aktualPos=$((aktualPos+1))                 #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+            echo -en "\033[$aktualPos;$((fix_X))H"     #visszalépés a 12-es X koordinátára ugyan abban a sorban
         fi
     fi
 
@@ -306,43 +306,144 @@ done
 ### padló kirajzolása
 echo -n "${palya_elemek[aljakezd]}"
 for((x=0; x < kertMeret; x++)) do
-    echo -n "${palya_elemek[aljafolyt]}"               #kért méretig kitölteni a tetővel, kettesével ugrunk
+    echo -n "${palya_elemek[aljafolyt]}"                 #kért méretig kitölteni a tetővel, kettesével ugrunk
 done
 echo "${palya_elemek[aljaveg]}"
 
-helyez_Y=$((helyez_Y+1))                                #sorral lejjebb akarjuk állítani 
-echo -en "\033[$((helyez_Y));1H"                        #itt azért 1H mert a sor elejére akarunk jutni 
+helyez_Y=$((helyez_Y+1))                                 #sorral lejjebb akarjuk állítani 
+echo -en "\033[$((helyez_Y));1H"                         #itt azért 1H mert a sor elejére akarunk jutni 
 
 ### célkereszt felrajzolása!
-saved_Y=$helyez_Y                                        #reszet előtt elmentjük a hasznos értéket, hogy hová kell lőni a kurzort
+dock_Y=$helyez_Y                                         #reset előtt elmentjük a már kiszámolt értéket tartalmazó Y helyet, ez adja meg a pálya alsó része alatti kurzor pihenp helyet
+dock_X=1                                               
 helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modify
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
+Y_null=$helyez_Y                                         #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
+X_null=$helyez_X                                         #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
+Y_max=$((helyez_Y + (kertMeret-1) * 2))     #helyez_Y-ban benne van, hogy már 1!
+X_max=$((helyez_X + (kertMeret-1) * 2))     #helyez_X-ben benne van, hogy már 1!
+
 
 echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
-echo -n "${palya_elemek[celhosszu]}"
+echo -n "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
+              
+echo -en "\033[$((helyez_Y+1));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
+echo -n "${palya_elemek[celrovid]}"                      #célkereszt rövid részének első része
 
-helyez_Y=$((helyez_Y+1))                                 #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
-echo -en "\033[$((helyez_Y));$((helyez_X))H" 
-echo -n "${palya_elemek[celrovid]}"
+echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"         #X pozi pseudo betolása, hogy a labda másik oldalán is megrajzoljuk a célkereszt rövid részét 
+echo -n "${palya_elemek[celrovid]}"                      #célkereszt rövid részének második része
 
-echo -en "\033[$((helyez_Y));$((helyez_X+4))H"           #X pozi pseudo betolása, hogy a labda másik oldalán is megrajzoljuk a célkereszt rövid részét 
-echo -n "${palya_elemek[celrovid]}"
+echo -en "\033[$((helyez_Y+2));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
+echo -n "${palya_elemek[celhosszu]}"                     #célkereszt hosszú részének nyomtatása
 
-helyez_Y=$((helyez_Y+1))                                 #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
-echo -en "\033[$((helyez_Y));$((helyez_X))H" 
-echo -n "${palya_elemek[celhosszu]}"
+#cserélni
+echo -en "\033[$((dock_Y));$((dock_X))H"                           #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
 
-echo -en "\033[$((saved_Y));1H"                          #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
-read -rsn 1 char
 
+read -rsn 1 char                                         #ciklust indító kezdő beolvasás
+
+while [[ $char != "" ]]; do 
+   if [[ $char = "w" ]]; then
+        if [[ $((helyez_Y-2)) -ge Y_null ]]; then
+            helyez_Y=$((helyez_Y-2))                     #2-vel lépünk felfele, ez 1 labda magassága és 1 sor magassága - alapvetően a labda feletti sor bal felső karakterén állunk          
+            echo -en "\033[$((helyez_Y));$((helyez_X))H" #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        fi
+    fi
+
+    if [[ $char = "s" ]]; then
+        if [[ $((helyez_Y+2)) -le Y_max ]]; then
+            helyez_Y=$((helyez_Y+2))                 #pozíció értékének csökkentése, ha még tudunk felfele lépni!           
+            echo -en "\033[$((helyez_Y));$((helyez_X))H"     #visszalépés a 12-es X koordinátára ugyan abban a sorban
+        fi
+    fi
+
+    read -rsn 1 char
+done
+
+
+#### functionok amik szövegben pozícionálnak:
+function DockCursor() { echo -en "\033[$(($1));$(($2))H"; }  #$1 itt a dock_Y! $2 pedig dock_X!
+
+# ezek mind function AimLower() minionjai lesznek
+function LowerOneLine() { true;}
+function LowerTwoLines() { true;}
+function LowerThreeLines() { true;}
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
 function IsItOnMap() { return 1;}
 function IsItAlive() { return 1;}
 
 #### functionok, mint célkereszt mozgatása következik!
-function AimLower() { true;}
-function AimHigher() { true;}
+function AimLower() {   #újrarajzolni részeket!
+    #fontos: lehet, hogy nem lesz szép mert flickerelni fog, ebben az esetben
+    #lehet próbálkozni pl: képernyő befagyasztással, vagy teljes újrarajzolással...
+
+    #először törölni az eddigit:
+    #felső elemek törlése
+    echo -n "${palya_elemek[szunet]}${palya_elemek[szunet]}${palya_elemek[szunet]}"
+
+    #középső sor, bal rövid rész törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -n "${palya_elemek[szunet]}"
+
+    #középső sor, jobb rövid rész törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -n "${palya_elemek[szunet]}"
+
+    #-> nincs +2-es nyomtatás, hiszen az alsó a kövi felsője lesz!
+
+    #utána felrajzolni a következőt:
+    helyez_Y=$((helyez_Y+2))
+
+    #középső sor, bal rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -n "${palya_elemek[celrovid]}"
+
+    #középső sor, jobb rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -n "${palya_elemek[celrovid]}"
+
+    #also sor, hosszú 6-as írása
+    echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
+    echo -n "${palya_elemek[celhosszu]}"
+    
+    #return $helyez_Y; #no clue on this
+}
+function AimHigher() { 
+    #először törölni az eddigit:
+
+    #törölni az alsó részeket:
+    #alsó sor, hosszú törlése
+    echo -en "\033[$((helyez_Y+2));$((helyez_X))H"
+    echo -n "${palya_elemek[szunet]}${palya_elemek[szunet]}${palya_elemek[szunet]}"
+
+    #középső sor, bal oldal törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -n "${palya_elemek[szunet]}"
+
+    #középső sor, jobb oldal törlése
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -n "${palya_elemek[szunet]}"
+
+    #-> nincs offset nélküli nyomtatás, hiszen a felső a kövi alsója lesz!
+
+    #utána felrajzolni a következőt:
+    helyez_Y=$((helyez_Y-2))
+
+    #középső sor, bal rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"
+    echo -n "${palya_elemek[celrovid]}"
+
+    #középső sor, jobb rövid rész írása
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"
+    echo -n "${palya_elemek[celrovid]}"
+
+    #felső sor, hosszú 6-as írása
+    echo -en "\033[$((helyez_Y));$((helyez_X))H"
+    echo -n "${palya_elemek[celhosszu]}"
+ 
+    #return $helyez_Y;
+}
 function AimRight() { true;}
 function AimLeft() { true;}
 
