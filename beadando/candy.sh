@@ -318,28 +318,33 @@ saved_Y=$helyez_Y                                        #reszet előtt elmentj�
 helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modify
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
 
-echo -en "\033[$((helyez_Y));$((helyez_X))H" 
+echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
 echo -n "${palya_elemek[celhosszu]}"
 
-helyez_Y=$((helyez_Y+1))
+helyez_Y=$((helyez_Y+1))                                 #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
 echo -en "\033[$((helyez_Y));$((helyez_X))H" 
 echo -n "${palya_elemek[celrovid]}"
 
-echo -en "\033[$((helyez_Y));$((helyez_X+4))H"
+echo -en "\033[$((helyez_Y));$((helyez_X+4))H"           #X pozi pseudo betolása, hogy a labda másik oldalán is megrajzoljuk a célkereszt rövid részét 
 echo -n "${palya_elemek[celrovid]}"
 
-helyez_Y=$((helyez_Y+1))
+helyez_Y=$((helyez_Y+1))                                 #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
 echo -en "\033[$((helyez_Y));$((helyez_X))H" 
 echo -n "${palya_elemek[celhosszu]}"
 
-echo -en "\033[$((saved_Y));1H"
+echo -en "\033[$((saved_Y));1H"                          #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
 read -rsn 1 char
 
 
+#### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
+function IsItOnMap() { return 1;}
+function IsItAlive() { return 1;}
 
-
-
-
+#### functionok, mint célkereszt mozgatása következik!
+function AimLower() { true;}
+function AimHigher() { true;}
+function AimRight() { true;}
+function AimLeft() { true;}
 
 
 
