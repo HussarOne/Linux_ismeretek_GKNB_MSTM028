@@ -11,7 +11,7 @@ declare TRUE
 declare FALSE
 
 TRUE=0
-FALSE=1
+#FALSE=1
 
 function changeTerminalBGColor {
     ### Szín teszt beállítása
@@ -62,7 +62,7 @@ function DrawBody() {
 
         for ((current_x = 0; current_x < kertMeret; current_x++)) do
             echo -n "${palya_elemek[szunet]}"            #szünet az első négyzetig
-            if [[ $((current_y % 2)) -eq 0 && ${palya[$Y_rowCount,$current_x]} != " " ]]; then      #ha a sor páros, akkor labda sor
+            if [[ $((current_y % 2)) -eq 0 && ${palya[$Y_rowCount,$current_x]} != "-" ]]; then      #ha a sor páros, akkor labda sor
            
                 #szín beállítása pirosra ha "r" a sorsolt érték
                 if [[ ${palya[$Y_rowCount,$current_x]} = "r" ]]; then
@@ -133,7 +133,7 @@ function DrawMap() {
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
 function IsItExisting() {   #$1 = relatív_Y, $2 = relatív_X 
-    if [[ ${palya[$1, $2]} != " " ]]; then
+    if [[ ${palya[$1,$2]} != "-" ]]; then
         return 0; # létezik
     fi
 
@@ -148,23 +148,24 @@ function IsItOnMap() {      #$1 = relatív Y, $2 = relatív_X
 }
 function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
     seged=()
-    pointer=$2
+    pointer=0
+    upperBound=$((kertMeret-1))
 
-    for ((i = $2; i >= 0; i-- )); do
-        if [[ ${palya[$1, $2]} != " " ]]; then
-            pointer=$((pointer-1))
-            seged+=("${palya[$1,$2]}")
-        
+    for ((i=upperBound; i > -1; i--)); do
+        if [[ "${palya[$i,$1]}" != "-" ]]; then
+            seged+=("${palya[$i,$1]}")
+            pointer=$((pointer+1))
         fi 
     done 
 
-    for ((i=pointer; i < $2; i++)){
-        seged+=(" ")
-    }
+    for ((i=pointer+1; i <= upperBound; i++)) do seged+=("-"); done
+
+    DockCursor "60" "1"
+    echo -n "${seged[@]}"
 
     local counter=0
-    for ((i=$2; i >= 0; i--)); do
-        palya[$1,$2]=${seged[$counter]}
+    for ((i=upperBound; i > -1; i--)); do
+        palya[$i,$1]=${seged[$counter]} #upperbound - i ? az rövidebb lenne haha
         counter=$((counter+1))
     done
 }
@@ -667,7 +668,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE ]]; 
         then   
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y-1)),$relativ_X]}" ]]; then
-                palya[$((relativ_Y-1)),$relativ_X]=" "           #elem kinullázása            
+                palya[$((relativ_Y-1)),$relativ_X]="-"           #elem kinullázása            
                 counter=$((counter+1))
             fi
         fi
@@ -676,7 +677,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE ]]; 
         then    
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y+1)),$relativ_X]}" ]]; then
-                palya[$((relativ_Y+1)),$relativ_X]=" "            #elem kinullázása
+                palya[$((relativ_Y+1)),$relativ_X]="-"            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -685,7 +686,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE ]]; 
         then   
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y)),$((relativ_X-1))]}" ]]; then
-                palya[$relativ_Y,$((relativ_X-1))]=" "            #elem kinullázása
+                palya[$relativ_Y,$((relativ_X-1))]="-"            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -694,14 +695,13 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE ]]; 
         then    
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$relativ_Y,$((relativ_X+1))]}" ]]; then
-                palya[$relativ_Y,$((relativ_X+1))]=" "            #elem kinullázása
+                palya[$relativ_Y,$((relativ_X+1))]="-"            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
 
         if [[ counter -gt 0 ]]; then
-            #unset palya[$relativ_Y, $relativ_X]
-            palya[$relativ_Y,$relativ_X]=" "                                #ha volt találat akkor a középső is megsemmisül
+            palya[$relativ_Y,$relativ_X]="-"                                #ha volt találat akkor a középső is megsemmisül
             user_pontszam=$((user_pontszam+${pontszam_loves[$counter]}))    #hozzáadjuk a pontszámot
         fi
 
@@ -709,14 +709,14 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         echo -n "$username pontszáma: $user_pontszam"   #works
     
         ## leesés logika:
-        if [[ "$(IsItOnMap "3" "$helyez_X")" -eq $TRUE ]];       then
-            Reassemble "0" "$helyez_X";                 fi
+        if [[ "$(IsItOnMap "0" "$relativ_X")" -eq $TRUE ]];       then
+            Reassemble "$relativ_X";                 fi
     
-        if [[ "$(IsItOnMap "3" "$((helyez_X+1))")" -eq $TRUE ]]; then
-            Reassemble "0" "$((helyez_X+1))";           fi
+        if [[ "$(IsItOnMap "0" "$((relativ_X+1))")" -eq $TRUE ]]; then
+            Reassemble "$((relativ_X+1))";           fi
 
-        if [[ "$(IsItOnMap "3" "$((helyez_X-1))")" -eq $TRUE ]]; then
-            Reassemble "0" "$((helyez_X-1))";           fi
+        if [[ "$(IsItOnMap "0" "$((relativ_X-1))")" -eq $TRUE ]]; then
+            Reassemble "$((relativ_X-1))";           fi
 
         ### redraw rész:
         DockCursor "$((outer_Y_start+1))" "$((outer_X_start))"
@@ -725,10 +725,10 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
 
         DockCursor "3" "1"
         for ((i = 0; i < kertMeret; i++)) do
-            for ((j = 0; j < kertMeret; j++)) do
-                echo -n "${palya[$i,$j]}"
-            done
             echo ""
+            for ((j = 0; j < kertMeret; j++)) do
+                echo -en "${palya[$i,$j]}"
+            done
         done
       
         DockCursor "$dock_Y" "$dock_X"              #kurzol visszadokkolása
