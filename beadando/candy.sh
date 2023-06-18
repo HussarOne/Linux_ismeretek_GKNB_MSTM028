@@ -126,6 +126,13 @@ function DrawAimCircle() {
     DockCursor "$dock_Y" "$dock_X"                           #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
 }
 
+function DrawTurnsLeft() {
+    echo -en "\033[K"
+    echo -en "\033[2;1H"
+    echo -n "Hátralévő körök száma:"
+    for ((i=0; i <= $1; i++ )) do echo -n " █"; done 
+}
+
 function DrawMap() { 
     DrawRoof
     DrawBody
@@ -154,11 +161,6 @@ function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
     pointer=0
     upperBound=$((kertMeret-1))
 
-    DockCursor "54" "1"
-    echo -en "$1"
-    DockCursor "55" "1"
-    echo -en $upperBound
-
     for ((i=upperBound; i > -1; i--)); do
         if [[ "${palya[$i,$1]}" != "$CsereElem" ]]; then
             seged+=("${palya[$i,$1]}")
@@ -168,14 +170,8 @@ function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
 
     for ((i=pointer; i <= upperBound; i++)) do seged+=("$CsereElem"); done
 
-    DockCursor "60" "1"
-    echo -n ${seged[@]}
-
     local counter=0
-    for ((i=upperBound; i > -1; i--)); do
-        palya[$i,$1]=${seged[$counter]} #upperbound - i ? az rövidebb lenne haha
-        counter=$((counter+1))
-    done
+    for ((i=upperBound; i > -1; i--)); do palya[$i,$1]=${seged[$((upperBound-i))]} ; done
 }
 
 #### functionok, melyek a célkereszthez kellenek!
@@ -620,7 +616,6 @@ loves_szam=(
 )
 
 loves_counter=${loves_szam[$kertMeret]}                  #Lövések számának beazonosítása pályaméret alapján
-map_still_playable=1                                     #logikai változó, a pálya még játszható-e
 
 kilep=0                                                  #hany entert ütöttek már le sorba
 
@@ -629,11 +624,12 @@ relativ_X=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen a
 
 user_pontszam=0
 
-read -rsn 1 char  #ciklust indító kezdő beolvasás
-while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
-    DockCursor "1" "1"                              #works
-    echo -n "$username pontszáma: $user_pontszam"   #works
+DockCursor "1" "1"                              #works
+echo "$username pontszáma: $user_pontszam"   #works
+DrawTurnsLeft "$loves_counter"
 
+read -rsn 1 char  #ciklust indító kezdő beolvasás
+while [[ loves_counter -ge 0 && kilep -ne 4 ]]; do
     while [[ $char != "" ]]; do 
 
         kilep=0
@@ -731,16 +727,13 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         DrawBody                                    #részben works, " " elágazás még nincs tesztelve!
         DrawAimCircle "$helyez_Y" "$helyez_X"       #works #célkereszt újrarajzolása
 
-        DockCursor "3" "1"
-        for ((i = 0; i < kertMeret; i++)) do
-            for ((j = 0; j < kertMeret; j++)) do
-                printf "%s" "${palya[$i,$j]}"
-            done
-            printf "\n"
-        done
-      
-        DockCursor "$dock_Y" "$dock_X"              #kurzol visszadokkolása
         loves_counter=$((loves_counter-1))          #lépésszám csökkentése
+
+        DockCursor "1" "1"                           #works
+        echo "$username pontszáma: $user_pontszam"   #works
+        DrawTurnsLeft "$loves_counter"
+
+        DockCursor "$dock_Y" "$dock_X"              #kurzol visszadokkolása
     fi
 
     read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!
