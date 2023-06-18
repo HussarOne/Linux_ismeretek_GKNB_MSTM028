@@ -666,18 +666,10 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         ##felette, ugyan azon X-en
         if [[ "$(IsItOnMap "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE ]]; 
         then   
-            
-
-            if [[ ${palya[$relativ_Y,$relativ_X]} -eq ${palya[$((relativ_Y-1)),$relativ_X]} ]]; then
+            if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y-1)),$relativ_X]}" ]]; then
                 #unset palya[$((relativ_Y-1)),$((relativ_X))]   #elem kinullázása
 
-                
-
-                palya[$((relativ_Y-1)),$((relativ_X))]=" "      #elem kinullázása
-
-                
-
-            
+                palya[$((relativ_Y-1)),$relativ_X]=" "      #elem kinullázása            
                 counter=$((counter+1))
             fi
         fi
@@ -685,9 +677,9 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         ##alatta, ugyan azon X-en
         if [[ "$(IsItOnMap "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE ]]; 
         then    
-            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y+1)), $relativ_X]} ]]; then
-                unset palya[$((relativ_Y+1)), $((relativ_X))]     #elem kinullázása
-                palya[$((relativ_Y+1)), $((relativ_X))]=" "       #elem kinullázása
+            if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y+1)),$relativ_X]}" ]]; then
+                #unset palya[$((relativ_Y+1)),$((relativ_X))]     #elem kinullázása
+                palya[$((relativ_Y+1)),$relativ_X]=" "       #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -695,9 +687,9 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         ##azonos magasság, balra 
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE ]]; 
         then   
-            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y)), $((relativ_X-1))]} ]]; then
-                unset palya[$((relativ_Y)), $((relativ_X-1))]     #elem kinullázása
-                palya[$((relativ_Y)), $((relativ_X-1))]=" "       #elem kinullázása
+            if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y)),$((relativ_X-1))]}" ]]; then
+                #unset palya[$((relativ_Y)),$((relativ_X-1))]     #elem kinullázása
+                palya[$relativ_Y,$((relativ_X-1))]=" "       #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -705,16 +697,16 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         ##azonos magasság, jobbra
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE ]]; 
         then    
-            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$relativ_Y, $relativ_X+1]} ]]; then
-                unset palya[$((relativ_Y)), $((relativ_X+1))]     #elem kinullázása
-                palya[$((relativ_Y)), $((relativ_X+1))]=" "       #elem kinullázása
+            if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$relativ_Y,$relativ_X+1]}" ]]; then
+                #unset palya[$((relativ_Y)),$((relativ_X+1))]     #elem kinullázása
+                palya[$relativ_Y,$((relativ_X+1))]=" "       #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
 
         if [[ counter -gt 0 ]]; then
-            unset palya[$relativ_Y, $relativ_X]
-            palya[$relativ_Y, $relativ_X]=" "                               #ha volt találat akkor a középső is megsemmisül
+            #unset palya[$relativ_Y, $relativ_X]
+            palya[$relativ_Y,$relativ_X]=" "                                #ha volt találat akkor a középső is megsemmisül
             user_pontszam=$((user_pontszam+${pontszam_loves[$counter]}))    #hozzáadjuk a pontszámot
         fi
 
