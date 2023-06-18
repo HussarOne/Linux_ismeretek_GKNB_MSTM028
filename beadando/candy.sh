@@ -765,9 +765,12 @@ while IFS=$'\t' read -r col1 col2; do
     scoreHolder+=("$col2")
 done < "$file"
 
-for ((i = 0; i < ${#scoreHolder}; i++)) do
-    for ((j = 0; j < $1-i-1; j++)) do
-        if [ ${scoreHolder[j]} -gt ${scoreHolder[j+1]} ]; then
+kivantHossz=$((${#scoreHolder}-2))
+echo "$kivantHossz"
+for ((i = 0; i < kivantHossz; i++)) do
+    for ((j = 0; j < kivantHossz-i-1; j++)) do
+        if [ ${scoreHolder[$j]} -gt ${scoreHolder[$j+1]} ]; then
+            echo "bejutok ide"
             score_temp=${scoreHolder[$j]}
             scoreHolder[j]=${scoreHolder[$((j+1))]}  
             scoreHolder[j+1]=$score_temp
