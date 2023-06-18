@@ -310,6 +310,8 @@ colorTable=(                        #bg = background  fg = foreground
     [fg_yellow]="\033[1;93m"     #untested
 )
 
+path=$(pwd)
+
 echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
 echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
 
@@ -435,6 +437,13 @@ kertMeret=$((minMeret-2))                  # A legkisebb pályaméret -2 kell, h
 for ((i = 1; i < 6; i++)) do
     if [[ $i -lt $k ]] || [[ $i -eq $k ]]; then
         kertMeret=$((kertMeret+2))
+
+        #ha még nem létezik a file, akkor ezzel létrehozzuk
+        filename="/$kertMeret x $kertMeret.txt"
+        file=$path$filename
+        if [ ! -e "$file" ]; then
+            echo >> "$file"
+        fi
     fi
 done
 echo -en "\033[13;1H"                      #13. sorra ugrás, majd az elejére, innen írjuk ki a választott pályaméretet szövegesen
@@ -739,6 +748,20 @@ while [[ loves_counter -ge 0 && kilep -ne 4 ]]; do
     read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!
 done
 
+sleep 4
+echo -e "clear; \033c\e[3J"                #képernyő letisztítása
+changeTerminalBGColor "bg_black" "$width" "$height" "1" 
+
+#eredménytábla kiírása:
+## adott eredménytábla beolvasása, ugyan azon a táblán játszóttakéval vetjük össze
+holder=()
+while read -r line; do
+    holder+=("$line")
+done < test.txt
+
+
+
+read -rsn 1 char
 echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
 echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
 
