@@ -9,6 +9,9 @@ declare -A loves_szam
 declare -A pontszam_loves
 declare TRUE
 declare FALSE
+declare CsereElem
+
+CsereElem="█"
 
 TRUE=0
 #FALSE=1
@@ -62,7 +65,7 @@ function DrawBody() {
 
         for ((current_x = 0; current_x < kertMeret; current_x++)) do
             echo -n "${palya_elemek[szunet]}"            #szünet az első négyzetig
-            if [[ $((current_y % 2)) -eq 0 && ${palya[$Y_rowCount,$current_x]} != "-" ]]; then      #ha a sor páros, akkor labda sor
+            if [[ $((current_y % 2)) -eq 0 && ${palya[$Y_rowCount,$current_x]} != "$CsereElem" ]]; then      #ha a sor páros, akkor labda sor
            
                 #szín beállítása pirosra ha "r" a sorsolt érték
                 if [[ ${palya[$Y_rowCount,$current_x]} = "r" ]]; then
@@ -133,7 +136,7 @@ function DrawMap() {
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
 function IsItExisting() {   #$1 = relatív_Y, $2 = relatív_X 
-    if [[ ${palya[$1,$2]} != "-" ]]; then
+    if [[ ${palya[$1,$2]} != "$CsereElem" ]]; then
         return 0; # létezik
     fi
 
@@ -152,13 +155,13 @@ function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
     upperBound=$((kertMeret-1))
 
     for ((i=upperBound; i > -1; i--)); do
-        if [[ "${palya[$i,$1]}" != "-" ]]; then
+        if [[ "${palya[$i,$1]}" != "$CsereElem" ]]; then
             seged+=("${palya[$i,$1]}")
             pointer=$((pointer+1))
         fi 
     done 
 
-    for ((i=pointer+1; i <= upperBound; i++)) do seged+=("-"); done
+    for ((i=pointer+1; i <= upperBound; i++)) do seged+=("$CsereElem"); done
 
     DockCursor "60" "1"
     echo -n "${seged[@]}"
@@ -668,7 +671,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE ]]; 
         then   
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y-1)),$relativ_X]}" ]]; then
-                palya[$((relativ_Y-1)),$relativ_X]="-"           #elem kinullázása            
+                palya[$((relativ_Y-1)),$relativ_X]=$CsereElem            #elem kinullázása            
                 counter=$((counter+1))
             fi
         fi
@@ -677,7 +680,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE ]]; 
         then    
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y+1)),$relativ_X]}" ]]; then
-                palya[$((relativ_Y+1)),$relativ_X]="-"            #elem kinullázása
+                palya[$((relativ_Y+1)),$relativ_X]=$CsereElem             #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -686,7 +689,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE ]]; 
         then   
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y)),$((relativ_X-1))]}" ]]; then
-                palya[$relativ_Y,$((relativ_X-1))]="-"            #elem kinullázása
+                palya[$relativ_Y,$((relativ_X-1))]=$CsereElem            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -695,13 +698,13 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE ]]; 
         then    
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$relativ_Y,$((relativ_X+1))]}" ]]; then
-                palya[$relativ_Y,$((relativ_X+1))]="-"            #elem kinullázása
+                palya[$relativ_Y,$((relativ_X+1))]=$CsereElem            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
 
         if [[ counter -gt 0 ]]; then
-            palya[$relativ_Y,$relativ_X]="-"                                #ha volt találat akkor a középső is megsemmisül
+            palya[$relativ_Y,$relativ_X]=$CsereElem                                #ha volt találat akkor a középső is megsemmisül
             user_pontszam=$((user_pontszam+${pontszam_loves[$counter]}))    #hozzáadjuk a pontszámot
         fi
 
