@@ -304,6 +304,18 @@ function AimLeft() {
 
 
 ##### filekezeléssel kapcsolatos funkciok
+function Sort() {   #$1 a rendezni kívánt mennyiség: file hossza $2 az array
+    for ((i = 0; i < $1; i++)) do
+        for ((j = 0; j<$1-i-1; j++)) do
+            if [ ${$2[j]} -gt ${2[$((j+1))]} ]; then
+
+                temp=${$2[j]}
+                ${$2[$j]}=${([$((j+1))]}  
+                ${$2[$((j+1))]}=$temp
+        fi
+    done
+done
+}
 
 
 colorTable=(                        #bg = background  fg = foreground
@@ -768,6 +780,20 @@ while IFS=$'\t' read -r col1 col2; do
     nameHolder+=("$col1")
     scoreHolder+=("$col2")
 done < "$file"
+
+for ((i = 0; i < ${#scoreHolder}; i++)) do
+    for ((j = 0; j<$1-i-1; j++)) do
+        if [ "${scoreHolder[$j]}" -gt "${scoreHolder[(($j+1))]}" ]; then
+            temp="${scoreHolder[$j]}"
+            scoreHolder[$j]="${scoreHolder[$((j+1))]}"  
+            scoreHolder[$((j+1))]=$temp
+
+            temp="${nameHolder[$j]}"
+            nameHolder[$j]="${nameHolder[$((j+1))]}"
+            nameHolder[$((j+1))]=$temp
+        fi
+    done
+done
 
 #Top 25 player, első 50 karaktere!
 for ((i = 0; i < 25; i++)) do
