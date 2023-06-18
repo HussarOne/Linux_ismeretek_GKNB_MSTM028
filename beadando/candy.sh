@@ -442,7 +442,7 @@ for ((i = 1; i < 6; i++)) do
         filename="/$kertMeret x $kertMeret.txt"
         file=$path$filename
         if [ ! -e "$file" ]; then
-            printf "\n\n ." >> "$file"
+            printf "\n ." >> "$file"
         fi
     fi
 done
@@ -769,7 +769,7 @@ while IFS=";" read -r col1 col2; do
     scoreHolder+=("$col2")
 done < "$file"
 
-kivantHossz=$((${#scoreHolder[@]}-1))
+kivantHossz=$((${#scoreHolder[@]}))
 for ((i = 0; i < kivantHossz; i++)) do
     for ((j = i; j < kivantHossz; j++)) do
         if [ ${scoreHolder[$i]} -lt ${scoreHolder[$j]} ]; then
