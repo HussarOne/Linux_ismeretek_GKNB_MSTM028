@@ -760,31 +760,29 @@ echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
 #file="$path/test.txt" test only
 nameHolder=()
 scoreHolder=()
-while IFS=$'\t' read -r col1 col2; do
+while IFS=";" read -r col1 col2; do
     nameHolder+=("$col1")
     scoreHolder+=("$col2")
 done < "$file"
 
-kivantHossz=$((${#scoreHolder}-2))
-echo "$kivantHossz"
+kivantHossz=$((${#scoreHolder[@]}-1))
 for ((i = 0; i < kivantHossz; i++)) do
-    for ((j = 0; j < kivantHossz-i-1; j++)) do
-        if [ ${scoreHolder[$j]} -gt ${scoreHolder[$j+1]} ]; then
-            echo "bejutok ide"
-            score_temp=${scoreHolder[$j]}
-            scoreHolder[j]=${scoreHolder[$((j+1))]}  
-            scoreHolder[j+1]=$score_temp
+    for ((j = i; j < kivantHossz; j++)) do
+        if [ ${scoreHolder[$i]} -lt ${scoreHolder[$j]} ]; then
+            score_temp=${scoreHolder[$i]}
+            scoreHolder[i]=${scoreHolder[$j]}  
+            scoreHolder[j]=$score_temp
 
-            name_temp=${nameHolder[$j]}
-            nameHolder[j]=${nameHolder[$((j+1))]}
-            nameHolder[j+1]=$name_temp
+            name_temp=${nameHolder[$i]}
+            nameHolder[i]=${nameHolder[$j]}
+            nameHolder[j]=$name_temp
         fi
     done
 done
 
 #Top 25 player, első 50 karaktere!
 for ((i = 0; i < 25; i++)) do
-    printf "%s \t %s \n" "${nameHolder[$i]:0:50}" "${scoreHolder[$i]:0:50}"
+    printf "%-10s \t\t\t  %s \n" "${nameHolder[$i]:0:20}" "${scoreHolder[$i]}"
 done
 
 read -rsn 1 char
