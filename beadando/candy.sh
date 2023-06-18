@@ -8,7 +8,7 @@ declare -A szelessegek
 declare -A loves_szam
 declare -A pontszam_loves
 declare TRUE
-declare FALSE
+#declare FALSE
 declare CsereElem
 
 CsereElem="X"
@@ -760,6 +760,10 @@ echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
 #file="$path/test.txt" test only
 nameHolder=()
 scoreHolder=()
+
+nameHolder+=("$username")
+scoreHolder+=("$user_pontszam")
+
 while IFS=";" read -r col1 col2; do
     nameHolder+=("$col1")
     scoreHolder+=("$col2")
