@@ -6,6 +6,7 @@ declare -A palya_elemek
 declare -A magassagok
 declare -A szelessegek                        
 declare -A loves_szam
+declare -A pontszam_loves
 
 function changeTerminalBGColor {
     ### Szín teszt beállítása
@@ -35,10 +36,99 @@ function DockCursor() {                 #$1 itt a dock_Y! $2 pedig dock_X!
 }  
 
 # functionok melyek a pálya kirajzolást valósítják meg:
-function DrawRoof() { true;}
-function DrawBody() { true;}
-function DrawFloor() { true;}
-function DrawMap() { true;}
+function DrawRoof() { 
+    ### tető kirajzolása:
+    echo -n "${palya_elemek[tetokezd]}"               #mindneképpen kirajzoljuk
+    for ((x=0; x < kertMeret; x++)) do
+        echo -n "${palya_elemek[tetofolyt]}"          #kért méretig kitölteni a tetővel, kettesével ugrunk
+    done
+    echo "${palya_elemek[tetoveg]}"
+
+    helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
+    echo -en "\033[$((helyez_Y));$((helyez_X))H"      #visszalökés itt történik meg, egy sorral lejjebb
+}
+
+function DrawBody() { 
+    ### pályatest kirajzolása:
+    Y_rowCount=0
+    for ((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
+        echo -n "${palya_elemek[balol]}"   #bal oldal kirajzolása
+
+        for ((current_x = 0; current_x < kertMeret; current_x++)) do
+            echo -n "${palya_elemek[szunet]}"            #szünet az első négyzetig
+            if [[ $((current_y % 2)) -eq 0 ]]; then      #ha a sor páros, akkor labda sor
+           
+                #szín beállítása pirosra ha "r" a sorsolt érték
+                if [[ ${palya[$Y_rowCount,$current_x]} = "r" ]]; then
+                    changeTerminalFGColor "fg_red" "$width" "$height"
+                fi
+
+                #szín beállítása pirosra ha "y" a sorsolt érték
+                if [[ ${palya[$Y_rowCount,$current_x]} = "y" ]]; then
+                    changeTerminalFGColor "fg_yellow" "$width" "$height"
+                fi
+
+                #szín beállítása pirosra ha "b" a sorsolt érték
+                if [[ ${palya[$Y_rowCount,$current_x]} = "b" ]]; then
+                    changeTerminalFGColor "fg_blue" "$width" "$height"
+                fi
+
+                echo -n "${palya_elemek[labda]}"         #labda nyomtatása adott színnel
+
+                #szín visszaállítása
+                changeTerminalFGColor "fg_white" "$width" "$height" "0"
+            else
+               echo -n "${palya_elemek[szunet]}"        #páratlan esetben ez egy üres sor
+            fi
+        done
+
+        if [[ $((current_y % 2)) -eq 0 ]]; then
+            Y_rowCount=$((Y_rowCount+1))                  #páros ágon vagyunk, tehát itt vannak csak golyók, itt kell nöcelni
+        fi
+
+        echo -n "${palya_elemek[szunet]}"                 #szünet a jobb oldali elemig
+        echo "${palya_elemek[jobol]}"                     #jobb oldal kirajzolása
+
+        helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
+        echo -en "\033[$((helyez_Y));$((helyez_X))H"      #visszalökés itt történik meg, egy sorral lejjebb
+    done
+
+}
+
+function DrawFloor() { 
+    ### padló kirajzolása
+    echo -n "${palya_elemek[aljakezd]}"
+    for ((x=0; x < kertMeret; x++)) do
+        echo -n "${palya_elemek[aljafolyt]}"                 #kért méretig kitölteni a tetővel, kettesével ugrunk
+    done
+    echo "${palya_elemek[aljaveg]}"
+
+    helyez_Y=$((helyez_Y+1))                                 #sorral lejjebb akarjuk állítani 
+    echo -en "\033[$((helyez_Y));1H"                         #itt azért 1H mert a sor elejére akarunk jutni 
+}
+
+function DrawAimCircle() { 
+    echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
+    echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
+              
+    echo -en "\033[$((helyez_Y+1));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
+    echo -en "${palya_elemek[celrovid]}"                     #célkereszt rövid részének első része
+
+    echo -en "\033[$((helyez_Y+1));$((helyez_X+4))H"         #X pozi pseudo betolása, hogy a labda másik oldalán is megrajzoljuk a célkereszt rövid részét 
+    echo -en "${palya_elemek[celrovid]}"                     #célkereszt rövid részének második része
+
+    echo -en "\033[$((helyez_Y+2));$((helyez_X))H"           #Y pozíció lejjebb léptetése, szegélytől beljebb a rövid rész rajzolásához
+    echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
+
+    DockCursor "$dock_Y" "$dock_X"                           #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
+}
+
+function DrawMap() { 
+    DrawRoof
+    DrawBody
+    DrawFloor
+    DrawAimCircle
+}
  
 # ezek mind function AimLower() minionjai lesznek
 function DrawLowerOneLine() { true;}
@@ -61,19 +151,41 @@ function DrawLeftTwoColumns() { true;}
 function DrawLeftThreeColumns() { true;}
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
-function IsItExisting() { #$1 = relatív Y, $2 = relatív X 
+function IsItExisting() {   #$1 = relatív Y, $2 = relatív_X 
     if [[ ${palya[$1, $2]} -ne " " ]]; then
         return 1    #létezik
     else    
         return 0    #nem létezik
     fi
 }
-function IsItOnMap() {  #$1 = relatív Y, $2 = relatív X 
+function IsItOnMap() {      #$1 = relatív Y, $2 = relatív_X 
     if [[ ($1 -gt -1 && $1 -lt $kertMeret) && ($2 -gt -1 && $2 -lt $kertMeret) ]]; then
         return 1
     fi
 
     return 0
+}
+function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
+    seged=()
+    pointer=$2
+
+    for ((i = $2; i >= 0; i-- )); do
+        if [[ ${palya[$1, $2]} != " " ]]; then
+            pointer=$((pointer-1))
+            seged+=("${palya[$1,$2]}")
+        
+        fi 
+    done 
+
+    for ((i=pointer; i < $2; i++)){
+        seged+=(" ")
+    }
+
+    local counter=0
+    for ((i=$2; i >= 0; i--)); do
+        palya[$1,$2]=${seged[$counter]}
+        counter=$((counter+1))
+    done
 }
 
 #### functionok, melyek a célkereszthez kellenek!
@@ -479,12 +591,12 @@ dock_Y=$helyez_Y                                         #reset előtt elmentjü
 dock_X=1                                               
 helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modify
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
-outer_Y_start=$((helyez_Y-1))
-outer_X_start=$((helyez_X-1))
+#outer_Y_start=$((helyez_Y-1))
+#outer_X_start=$((helyez_X-1))
 inner_Y_min=$((helyez_Y))                                #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
 inner_X_min=$((helyez_X))                                #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
-inner_Y_max=$((helyez_Y+(($kertMeret)*2)))             #helyez_Y-ban benne van, hogy már 1!
-inner_X_max=$((helyez_X+(($kertMeret)*4)))             #helyez_X-ben benne van, hogy már 1!
+inner_Y_max=$((helyez_Y+((kertMeret)*2)))               #helyez_Y-ban benne van, hogy már 1!
+inner_X_max=$((helyez_X+((kertMeret)*4)))               #helyez_X-ben benne van, hogy már 1!
 
 echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
 echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
@@ -499,6 +611,13 @@ echo -en "\033[$((helyez_Y+2));$((helyez_X))H"           #Y pozíció lejjebb l�
 echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
 
 DockCursor "$dock_Y" "$dock_X"                           #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
+
+pontszam_loves=(
+    [1]=8
+    [2]=20
+    [3]=34
+    [4]=50
+)
 
 loves_szam=(
     [7]=7
@@ -518,6 +637,8 @@ relativ_X=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen a
 
 echo -en "X: $relativ_X, Y: $relativ_Y" 
 DockCursor "$dock_Y" "$dock_X"
+
+user_pontszam=0
 
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
 while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
@@ -552,9 +673,9 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
             fi
         fi
 
-        echo -en "\033[K"
-        echo -en "X: $relativ_X, Y: $relativ_Y" 
-        DockCursor "$dock_Y" "$dock_X"
+        #echo -en "\033[K"
+        #echo -en "X: $relativ_X, Y: $relativ_Y" 
+        #DockCursor "$dock_Y" "$dock_X"
 
         read -rsn 1 char
     done
@@ -572,32 +693,69 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
         #ha létezik amire lőttünk bejutunk ide, most ellenőrizzük, hogy a 4 szomszédja létezik-e
         #valamint, hogy a térképen vannak-e!
         counter=0       #ez a változó fogja számontartani, hogy hány szomszédot találtunk!
-        if [[   "$(IsItOnMap "" "")"  && 
-                "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq 1 ]]; then    ##felette, ugyan azon X-en
-            echo ""
+
+        ##felette, ugyan azon X-en
+        if [[ "$(IsItOnMap    "$((relativ_Y-1))" "$relativ_X")" -eq 1  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq 1 ]]; 
+        then   
+            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y-1)), $relativ_X]} ]]; then
+                palya[$((relativ_Y-1)), $relativ_X]=" "     #elem kinullázása
+                counter=$((counter+1))
+            fi
         fi
 
-        if [[ "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq 1 ]]; then    ##alatta, ugyan azon X-en
-            echo ""
+        ##alatta, ugyan azon X-en
+        if [[ "$(IsItOnMap    "$((relativ_Y+1))" "$relativ_X")" -eq 1 && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq 1 ]]; 
+        then    
+            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y+1)), $relativ_X]} ]]; then
+                palya[$((relativ_Y+1)), $relativ_X]=" "     #elem kinullázása
+                counter=$((counter+1))
+            fi
         fi
 
-        if [[ "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq 1 ]]; then    ##azonos magasság, balra 
-            echo ""
+        ##azonos magasság, balra 
+        if [[ "$(IsItOnMap    "$relativ_Y" "$((relativ_X-1))")" -eq 1 && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq 1 ]]; 
+        then   
+            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y)), $((relativ_X-1))]} ]]; then
+                palya[$relativ_Y, $((relativ_X-1))]=" "     #elem kinullázása
+                counter=$((counter+1))
+            fi
         fi
 
-        if [[ "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq 1 ]]; then    ##azonos magasság, jobbra
-            echo ""
+        ##azonos magasság, jobbra
+        if [[ "$(IsItOnMap    "$relativ_Y" "$((relativ_X+1))")" -eq 1 && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq 1 ]]; 
+        then    
+            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y)), $((relativ_X+1))]} ]]; then
+                palya[$relativ_Y, $((relativ_X+1))]=" "     #elem kinullázása
+                counter=$((counter+1))
+            fi
+        fi
+
+        if [[ counter -gt 0 ]]; then
+            palya[$relativ_Y, $relativ_X]=" "                               #ha volt találat akkor a középső is megsemmisül
+            user_pontszam=$((user_pontszam+${pontszam_loves[$counter]}))    #hozzáadjuk a pontszámot
         fi
     fi
-
 
     #újrarajzolás és játék ág
     #itt lesz a kilövési logika és pálya meg minden csinálva...
     #itt történt már meg a választás...
-    loves_counter=$((loves_counter-1))  #lépésszám csökkentése
-
-
     
+
+    ## leesés logika:
+    if "$(IsItOnMap "0" "$helyez_X")";       then
+        Reassemble "0" "$helyez_X";                 fi
+    
+    if "$(IsItOnMap "0" "$((helyez_X+1))")"; then
+        Reassemble "0" "$((helyez_X+1))";           fi
+
+    if "$(IsItOnMap "0" "$((helyez_X-1))")"; then
+        Reassemble "0" "$((helyez_X-1))";           fi
+
+    ### redraw rész:
+
+
+    #### lépésszám csökkentése
+    loves_counter=$((loves_counter-1))  #lépésszám csökkentése
 
     read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!
 done
