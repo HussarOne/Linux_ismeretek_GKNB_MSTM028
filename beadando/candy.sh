@@ -442,7 +442,7 @@ for ((i = 1; i < 6; i++)) do
         filename="/$kertMeret x $kertMeret.txt"
         file=$path$filename
         if [ ! -e "$file" ]; then
-            echo >> "$file"
+            printf "\n\n ." >> "$file"
         fi
     fi
 done
