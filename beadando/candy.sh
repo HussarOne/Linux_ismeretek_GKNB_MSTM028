@@ -766,15 +766,15 @@ while IFS=$'\t' read -r col1 col2; do
 done < "$file"
 
 for ((i = 0; i < ${#scoreHolder}; i++)) do
-    for ((j = 0; j<$1-i-1; j++)) do
-        if [ "${scoreHolder[$j]}" -gt "${scoreHolder[(($j+1))]}" ]; then
-            temp="${scoreHolder[$j]}"
-            scoreHolder[$j]="${scoreHolder[$((j+1))]}"  
-            scoreHolder[$((j+1))]=$temp
+    for ((j = 0; j < $1-i-1; j++)) do
+        if [ ${scoreHolder[j]} -gt ${scoreHolder[j+1]} ]; then
+            score_temp=${scoreHolder[$j]}
+            scoreHolder[j]=${scoreHolder[$((j+1))]}  
+            scoreHolder[j+1]=$score_temp
 
-            temp="${nameHolder[$j]}"
-            nameHolder[$j]="${nameHolder[$((j+1))]}"
-            nameHolder[$((j+1))]=$temp
+            name_temp=${nameHolder[$j]}
+            nameHolder[j]=${nameHolder[$((j+1))]}
+            nameHolder[j+1]=$name_temp
         fi
     done
 done
