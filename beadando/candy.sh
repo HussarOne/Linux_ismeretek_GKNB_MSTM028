@@ -130,7 +130,7 @@ function DrawTurnsLeft() {
     echo -en "\033[K"
     echo -en "\033[2;1H"
     echo -n "Hátralévő körök száma:"
-    for ((i=0; i <= $1; i++ )) do echo -n " █"; done 
+    for ((i=0; i < $1; i++ )) do echo -n " █"; done 
 }
 
 function DrawMap() { 
