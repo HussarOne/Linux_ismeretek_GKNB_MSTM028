@@ -748,16 +748,20 @@ while [[ loves_counter -ge 0 && kilep -ne 4 ]]; do
     read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!
 done
 
-sleep 4
+sleep 3
 echo -e "clear; \033c\e[3J"                #képernyő letisztítása
 changeTerminalBGColor "bg_black" "$width" "$height" "1" 
+changeTerminalFGColor "fg_white" "$width" "$height" 
 
 #eredménytábla kiírása:
 ## adott eredménytábla beolvasása, ugyan azon a táblán játszóttakéval vetjük össze
+file="$path/test.txt"
 holder=()
 while read -r line; do
     holder+=("$line")
-done < test.txt
+done < "$file"
+
+echo ${holder[@]}
 
 
 
