@@ -621,7 +621,7 @@ relativ_X=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen a
 
 user_pontszam=0
 
-read -rsn 1 char                                         #ciklust indító kezdő beolvasás
+read -rsn 1 char  #ciklust indító kezdő beolvasás
 while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
     while [[ $char != "" ]]; do 
 
@@ -667,8 +667,18 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         ##felette, ugyan azon X-en
         if [[ "$(IsItOnMap "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE ]]; 
         then   
-            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y-1)), $relativ_X]} ]]; then
-                palya[$((relativ_Y-1)), $relativ_X]=" "     #elem kinullázása
+            
+
+            if [[ ${palya[$relativ_Y,$relativ_X]} -eq ${palya[$((relativ_Y-1)),$relativ_X]} ]]; then
+                #unset palya[$((relativ_Y-1)),$((relativ_X))]   #elem kinullázása
+
+                
+
+                palya[$((relativ_Y-1)),$((relativ_X))]=" "      #elem kinullázása
+
+                
+
+            
                 counter=$((counter+1))
             fi
         fi
@@ -677,7 +687,8 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         if [[ "$(IsItOnMap "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE ]]; 
         then    
             if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y+1)), $relativ_X]} ]]; then
-                palya[$((relativ_Y+1)), $relativ_X]=" "     #elem kinullázása
+                unset palya[$((relativ_Y+1)), $((relativ_X))]     #elem kinullázása
+                palya[$((relativ_Y+1)), $((relativ_X))]=" "       #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -686,7 +697,8 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE ]]; 
         then   
             if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y)), $((relativ_X-1))]} ]]; then
-                palya[$relativ_Y, $((relativ_X-1))]=" "     #elem kinullázása
+                unset palya[$((relativ_Y)), $((relativ_X-1))]     #elem kinullázása
+                palya[$((relativ_Y)), $((relativ_X-1))]=" "       #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -694,13 +706,15 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         ##azonos magasság, jobbra
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE ]]; 
         then    
-            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y)), $((relativ_X+1))]} ]]; then
-                palya[$relativ_Y, $((relativ_X+1))]=" "     #elem kinullázása
+            if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$relativ_Y, $relativ_X+1]} ]]; then
+                unset palya[$((relativ_Y)), $((relativ_X+1))]     #elem kinullázása
+                palya[$((relativ_Y)), $((relativ_X+1))]=" "       #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
 
         if [[ counter -gt 0 ]]; then
+            unset palya[$relativ_Y, $relativ_X]
             palya[$relativ_Y, $relativ_X]=" "                               #ha volt találat akkor a középső is megsemmisül
             user_pontszam=$((user_pontszam+${pontszam_loves[$counter]}))    #hozzáadjuk a pontszámot
         fi
@@ -720,15 +734,19 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
 
         ### redraw rész:
         DockCursor "$((outer_Y_start+1))" "$((outer_X_start))"
-        #echo -en "\033[$((outer_Y_start+1));$((outer_X_start+1))H"
-        DrawBody 
-        DrawAimCircle "$helyez_Y" "$helyez_X"       #works
+        DrawBody                                    #részben works, " " elágazás még nincs tesztelve!
+        DrawAimCircle "$helyez_Y" "$helyez_X"       #works #célkereszt újrarajzolása
 
+        DockCursor "3" "1"
+        for ((i = 0; i < kertMeret; i++)) do
+            for ((j = 0; j < kertMeret; j++)) do
+                echo -n "${palya[$i,$j]}"
+            done
+            echo ""
+        done
       
-        DockCursor "$dock_Y" "$dock_X"
-
-        #### lépésszám csökkentése
-        loves_counter=$((loves_counter-1))  #lépésszám csökkentése
+        DockCursor "$dock_Y" "$dock_X"              #kurzol visszadokkolása
+        loves_counter=$((loves_counter-1))          #lépésszám csökkentése
     fi
 
     read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!

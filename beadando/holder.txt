@@ -157,3 +157,47 @@ echo -en "bejutok az első if ifjébe is"
 
 DockCursor "5" "1" 
 echo "${palya[$((relativ_Y-1)), $relativ_X]}"
+
+# ezek mind function AimLower() minionjai lesznek
+function DrawLowerOneLine() { true;}
+function DrawLowerTwoLines() { true;}
+function DrawLowerThreeLines() { true;}
+
+# ezek mind function AimHigher() minionjai lesznek
+function DrawHigherOneLine() { true;}
+function DrawHigherTwoLines() { true;}
+function DrawHigherThreeLines() { true;}
+
+#ezek mind function AimRight() minionjai lesznek
+function DrawRightOneColumn() { true;}
+function DrawRightTwoColumns() { true;}
+function DrawRightThreeColumns() { true;}
+
+#ezek mind function AimLeft() minionjai lesznek
+function DrawLeftOneColumn() { true;}
+function DrawLeftTwoColumns() { true;}
+function DrawLeftThreeColumns() { true;}
+
+
+
+
+DockCursor "19" "1"
+            echo -n "bejutok ide"
+            DockCursor "20" "1" #${palya[$i,$j]}
+            y_holder=$((relativ_Y-1))
+            x_holder=$relativ_X
+            echo -n "$y_holder $x_holder"
+            DockCursor "21" "1"
+            #echo -n "${palya[1,1]}" 
+            echo -n "${palya[3,3]}"
+
+DockCursor "15" "1"
+                echo -n "Bejutok az unset utánig!"
+                
+                DockCursor "16" "1"
+                echo -n "${palya[$((relativ_Y-1)),$((relativ_X))]}"
+
+DockCursor "17" "1"
+                echo -n "${palya[$((relativ_Y-1)),$((relativ_X))]}"
+                DockCursor "18" "1"
+                echo -n "újraassignolás megvolt!"
