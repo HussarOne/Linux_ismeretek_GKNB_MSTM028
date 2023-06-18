@@ -439,7 +439,7 @@ for ((i = 1; i < 6; i++)) do
         kertMeret=$((kertMeret+2))
 
         #ha még nem létezik a file, akkor ezzel létrehozzuk
-        filename="/$kertMeret x $kertMeret.txt"
+        filename=$(printf "/%s x %s.txt" "$kertMeret" "$kertMeret")
         file=$path$filename
         if [ ! -e "$file" ]; then
             printf "\n ." >> "$file"
@@ -769,7 +769,7 @@ while IFS=";" read -r col1 col2; do
     scoreHolder+=("$col2")
 done < "$file"
 
-kivantHossz=$((${#scoreHolder[@]}))
+kivantHossz=$((${#scoreHolder[@]}-1))
 for ((i = 0; i < kivantHossz; i++)) do
     for ((j = i; j < kivantHossz; j++)) do
         if [ ${scoreHolder[$i]} -lt ${scoreHolder[$j]} ]; then
@@ -789,6 +789,13 @@ for ((i = 0; i < 25; i++)) do
     printf "%-10s \t\t\t  %s \n" "${nameHolder[$i]:0:20}" "${scoreHolder[$i]}"
 done
 
+# file felülírása és újra kiírása
+printf "%s\t%s\n" "${nameHolder[0]}" "${scoreHolder[0]}" >> "$file"
+for (( i = 1; i < ${#nameHolder}; i++ )) do
+    printf "%s\t%s\n" "${nameHolder[$i]}" "${scoreHolder[$i]}" > "$file"
+done
+echo " ." > "$file"
+echo "eredmények mentve"
 read -rsn 1 char
 
 #-------------------------------------------------------------------
