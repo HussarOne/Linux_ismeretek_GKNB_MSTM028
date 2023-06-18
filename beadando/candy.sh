@@ -302,22 +302,6 @@ function AimLeft() {
     echo -en "${palya_elemek[celrovid]}${palya_elemek[celrovid]}"
 }
 
-
-##### filekezeléssel kapcsolatos funkciok
-function Sort() {   #$1 a rendezni kívánt mennyiség: file hossza $2 az array
-    for ((i = 0; i < $1; i++)) do
-        for ((j = 0; j<$1-i-1; j++)) do
-            if [ ${$2[j]} -gt ${2[$((j+1))]} ]; then
-
-                temp=${$2[j]}
-                ${$2[$j]}=${([$((j+1))]}  
-                ${$2[$((j+1))]}=$temp
-        fi
-    done
-done
-}
-
-
 colorTable=(                        #bg = background  fg = foreground
     [bg_black]="\033[40m"        #works 
     [fg_white]="\033[1;97m"      #untested
