@@ -19,8 +19,8 @@ done < "$srcFile"
 
 echo "${#holder[@]}"
 
-echo -n > "$dstFile"
-for ((i = 0; i < $((${#holder[@]}-1)); i++ )) do
-    echo -e "${holder[$i]}" >> "$dstFile"
+echo "${holder[0]}" >| "$dstFile"
+for ((i = 1; i < $((${#holder[@]})); i++ )) do
+    echo "${holder[$i]}" >> "$dstFile"
 done
 echo -e " ." >> "$dstFile"
