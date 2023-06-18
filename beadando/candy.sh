@@ -5,6 +5,7 @@ declare -A palya
 declare -A palya_elemek  
 declare -A magassagok
 declare -A szelessegek                        
+declare -A loves_szam
 
 function changeTerminalBGColor {
     ### Szín teszt beállítása
@@ -20,22 +21,44 @@ function changeTerminalBGColor {
             echo "$sorHolder"           #sorok nyomtatása amíg van magasság
         done
 
-        echo -en "\033[1;1H"        #terminál kocsi 1,1-es helyre ugratása festés után
+        echo -en "\033[1;1H"            #terminál kocsi 1,1-es helyre ugratása festés után
     fi
 }
 function changeTerminalFGColor {
-    echo -en "${colorTable[$1]}" ### Szín teszt beállítása
+    echo -en "${colorTable[$1]}"        ### Szín teszt beállítása
 }
+
 
 #### functionok amik szövegben pozícionálnak:
 function DockCursor() {                 #$1 itt a dock_Y! $2 pedig dock_X!
     echo -en "\033[$(($1));$(($2))H"; 
 }  
 
+# functionok melyek a pálya kirajzolást valósítják meg:
+function DrawRoof() { true;}
+function DrawBody() { true;}
+function DrawFloor() { true;}
+function DrawMap() { true;}
+ 
 # ezek mind function AimLower() minionjai lesznek
-function LowerOneLine() { true;}
-function LowerTwoLines() { true;}
-function LowerThreeLines() { true;}
+function DrawLowerOneLine() { true;}
+function DrawLowerTwoLines() { true;}
+function DrawLowerThreeLines() { true;}
+
+# ezek mind function AimHigher() minionjai lesznek
+function DrawHigherOneLine() { true;}
+function DrawHigherTwoLines() { true;}
+function DrawHigherThreeLines() { true;}
+
+#ezek mind function AimRight() minionjai lesznek
+function DrawRightOneColumn() { true;}
+function DrawRightTwoColumns() { true;}
+function DrawRightThreeColumns() { true;}
+
+#ezek mind function AimLeft() minionjai lesznek
+function DrawLeftOneColumn() { true;}
+function DrawLeftTwoColumns() { true;}
+function DrawLeftThreeColumns() { true;}
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
 function IsItOnMap() { return 1;}
@@ -298,7 +321,7 @@ while [[ $k -lt 6 ]] && [[ $found -ne 1 ]]; do
     fi
 done
 
-kertMeret=$((minMeret-2))                   # A legkisebb pályaméret -2 kell, hogy ha az első opció 1-es érzékével növelünk akkor 7 x 7 legyen!
+kertMeret=$((minMeret-2))                  # A legkisebb pályaméret -2 kell, hogy ha az első opció 1-es érzékével növelünk akkor 7 x 7 legyen!
 for ((i = 1; i < 6; i++)) do
     if [[ $i -lt $k ]] || [[ $i -eq $k ]]; then
         kertMeret=$((kertMeret+2))
@@ -474,34 +497,74 @@ echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú r�
 DockCursor "$dock_Y" "$dock_X"                           #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
 
 
+
+loves_szam=(
+    [7]=7
+    [9]=9
+    [11]=11
+    [13]=13
+    [15]=15
+)
+
+loves_counter=${loves_szam[$kertMeret]}                  #Lövések számának beazonosítása pályaméret alapján
+map_still_playable=1                                     #logikai változó, a pálya még játszható-e
+
+val=""
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
-while [[ $char != "" ]]; do 
-    if [[ $char = "w" ]]; then
-        if [[ $((helyez_Y-2)) -ge $Y_null ]]; then
-            AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
+while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
+    while [[ $char != "" ]]; do 
+        if [[ $char = "w" ]]; then
+            if [[ $((helyez_Y-2)) -ge $Y_null ]]; then
+                AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X";
+                val="$val$char"    
+            fi
+        fi
+
+        if [[ $char = "s" ]]; then
+            if [[ $((helyez_Y+2)) -le $Y_max ]]; then 
+                AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; 
+                val="$val$char"    
+            fi
+        fi
+
+        if [[ $char = "a" ]]; then
+            if [[ $((helyez_X-4)) -ge $X_null ]]; then 
+                AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
+                val="$val$char"    
+            fi
+        fi
+
+        if [[ $char = "d" ]]; then
+            if [[ $((helyez_X+4)) -le $X_max ]]; then 
+                AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
+                val="$val$char"
+            fi
+        fi
+
+        read -rsn 1 char
+    done
+
+    #kilépési kondíciók guard patternel
+    val="$val$char"                                     #mivel enter miatt kilép a for, ezért az entert itt rakjuk hozzá!
+    if [[ ${val[#val-2]+val[#val-1]} -eq "" ]]; then    #ha két entert ütött egymás után akkor kilépés
+        break
     fi
 
-    if [[ $char = "s" ]]; then
-        if [[ $((helyez_Y+2)) -le $Y_max ]]; then 
-            AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
-    fi
+    #újrarajzolás és játék ág
+    #itt lesz a kilövési logika és pálya meg minden csinálva...
+    #itt történt már meg a választás...
+    loves_counter=$((loves_counter-1))  #lépésszám csökkentése
 
-    if [[ $char = "a" ]]; then
-        if [[ $((helyez_X-4)) -ge $X_null ]]; then 
-            AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
-    fi
 
-    if [[ $char = "d" ]]; then
-        if [[ $((helyez_X+4)) -le $X_max ]]; then 
-            AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
-    fi
+    
 
-    read -rsn 1 char
+    read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!
 done
-read -rsn 1 char
 
 echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
 echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
+
+
 
 #-------------------------------------------------------------------
 # tervezési area
