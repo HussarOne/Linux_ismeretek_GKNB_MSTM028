@@ -61,11 +61,20 @@ function DrawLeftTwoColumns() { true;}
 function DrawLeftThreeColumns() { true;}
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
-function IsItOnMap() { 
-    #if [[ ${palya[]} ]] 
-    true;
+function IsItExisting() { #$1 = relatív Y, $2 = relatív X 
+    if [[ ${palya[$1, $2]} -ne " " ]]; then
+        return 1    #létezik
+    else    
+        return 0    #nem létezik
+    fi
 }
-function IsItAlive() { return 1;}
+function IsItOnMap() {  #$1 = relatív Y, $2 = relatív X 
+    if [[ ($1 -gt -1 && $1 -lt $kertMeret) && ($2 -gt -1 && $2 -lt $kertMeret) ]]; then
+        return 1
+    fi
+
+    return 0
+}
 
 #### functionok, melyek a célkereszthez kellenek!
 function AimLower() {   #újrarajzolni részeket!
@@ -352,17 +361,7 @@ szinek=(
 ## pálya labda színeinek kisorsolása
 for((i = 0; i < kertMeret; i++)) do
     for((j = 0; j < kertMeret; j++)) do
-        holder=$((RANDOM % hanyszin))
-
-        h=0
-        found_h=0 
-        while [[ h -lt hanyszin ]] && [[ found_h -ne 1 ]]
-        do
-            if [[ $h -eq $holder ]]; then
-                palya[$i,$j]=${szinek[h]}
-            fi
-            h=$((h+1))
-        done
+        palya[$i,$j]=${szinek[$((RANDOM % hanyszin))]}
     done
 done
 
@@ -513,28 +512,40 @@ loves_counter=${loves_szam[$kertMeret]}                  #Lövések számának b
 map_still_playable=1                                     #logikai változó, a pálya még játszható-e
 
 kilep=0                                                  #hany entert ütöttek már le sorba
+
+relativ_Y=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen ami a pálya memória reprezentációját végezné
+relativ_X=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen ami a pálya memória reprezentációját végezné
+
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
 while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
     while [[ $char != "" ]]; do 
         kilep=0
         if [[ $char = "w" ]]; then
             if [[ $((helyez_Y-2)) -ge $inner_Y_min ]]; then
-                AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
+                AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X";
+                relatív_Y=$((relativ_Y-1))    
+            fi
         fi
 
         if [[ $char = "s" ]]; then
             if [[ $((helyez_Y+2)) -le $inner_Y_max ]]; then 
-                AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
+                AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; 
+                relatív_Y=$((relativ_Y+1)) 
+            fi
         fi
 
         if [[ $char = "a" ]]; then
             if [[ $((helyez_X-4)) -ge $inner_X_min ]]; then 
-                AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
+                AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
+                relatív_X=$((relativ_X-1))     
+            fi
         fi
 
         if [[ $char = "d" ]]; then
             if [[ $((helyez_X+4)) -le $inner_X_max ]]; then 
-                AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
+                AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
+                relatív_X=$((relativ_X+1)) 
+            fi
         fi
 
         read -rsn 1 char
@@ -546,8 +557,31 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
         break
     fi
 
+
     #golyó létezésének ellenőrzése, ha nem létezik, ne történjen semmi se!
-    
+    if [[ "$(IsItExisting "$relativ_Y" "$relativ_X")" -eq 1 ]]; then    #amire lőttünk az létezik!
+        
+        #ha létezik amire lőttünk bejutunk ide, most ellenőrizzük, hogy a 4 szomszédja létezik-e
+        #valamint, hogy a térképen vannak-e!
+        counter=0       #ez a változó fogja számontartani, hogy hány szomszédot találtunk!
+        if [[   "$(IsItOnMap "" "")"  && 
+                "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq 1 ]]; then    ##felette, ugyan azon X-en
+            echo ""
+        fi
+
+        if [[ "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq 1 ]]; then    ##alatta, ugyan azon X-en
+            echo ""
+        fi
+
+        if [[ "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq 1 ]]; then    ##azonos magasság, balra 
+            echo ""
+        fi
+
+        if [[ "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq 1 ]]; then    ##azonos magasság, jobbra
+            echo ""
+        fi
+    fi
+
 
     #újrarajzolás és játék ág
     #itt lesz a kilövési logika és pálya meg minden csinálva...

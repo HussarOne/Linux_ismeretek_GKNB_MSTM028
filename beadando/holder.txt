@@ -119,3 +119,7 @@ echo
 echo $helyez_X
 echo $X_null
 echo $X_max
+
+
+arr_y_idx=$(((((helyez_Y+1)-(inner_Y_min))/2)-1))   #tábla to pálya memória reprezentálásához való átalakítás
+#arr_x_idx=$(((((helyez_X+4)-(inner_X_min))/4)-1))   #detto
