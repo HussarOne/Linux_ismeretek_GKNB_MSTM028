@@ -7,6 +7,11 @@ declare -A magassagok
 declare -A szelessegek                        
 declare -A loves_szam
 declare -A pontszam_loves
+declare TRUE
+declare FALSE
+
+TRUE=0
+FALSE=1
 
 function changeTerminalBGColor {
     ### Szín teszt beállítása
@@ -50,35 +55,31 @@ function DrawRoof() {
 
 function DrawBody() { 
     ### pályatest kirajzolása:
+    y_lepegeto=$((outer_Y_start+1))
     Y_rowCount=0
     for ((current_y = 1; current_y < magassagok[$kertMeret]-1 ; current_y++)) do
         echo -n "${palya_elemek[balol]}"   #bal oldal kirajzolása
 
         for ((current_x = 0; current_x < kertMeret; current_x++)) do
             echo -n "${palya_elemek[szunet]}"            #szünet az első négyzetig
-            if [[ $((current_y % 2)) -eq 0 ]]; then      #ha a sor páros, akkor labda sor
+            if [[ $((current_y % 2)) -eq 0 && ${palya[$Y_rowCount,$current_x]} != " " ]]; then      #ha a sor páros, akkor labda sor
            
                 #szín beállítása pirosra ha "r" a sorsolt érték
                 if [[ ${palya[$Y_rowCount,$current_x]} = "r" ]]; then
-                    changeTerminalFGColor "fg_red" "$width" "$height"
-                fi
+                    changeTerminalFGColor "fg_red" "$width" "$height"; fi
 
                 #szín beállítása pirosra ha "y" a sorsolt érték
                 if [[ ${palya[$Y_rowCount,$current_x]} = "y" ]]; then
-                    changeTerminalFGColor "fg_yellow" "$width" "$height"
-                fi
+                    changeTerminalFGColor "fg_yellow" "$width" "$height"; fi
 
                 #szín beállítása pirosra ha "b" a sorsolt érték
                 if [[ ${palya[$Y_rowCount,$current_x]} = "b" ]]; then
-                    changeTerminalFGColor "fg_blue" "$width" "$height"
-                fi
+                    changeTerminalFGColor "fg_blue" "$width" "$height"; fi
 
-                echo -n "${palya_elemek[labda]}"         #labda nyomtatása adott színnel
-
-                #szín visszaállítása
-                changeTerminalFGColor "fg_white" "$width" "$height" "0"
+                echo -n "${palya_elemek[labda]}"                            #labda nyomtatása adott színnel
+                changeTerminalFGColor "fg_white" "$width" "$height" "0"     #szín visszaállítása
             else
-               echo -n "${palya_elemek[szunet]}"        #páratlan esetben ez egy üres sor
+               echo -n "${palya_elemek[szunet]}"        #páratlan vagy " " esetben ez egy üres sor/üres elem
             fi
         done
 
@@ -89,10 +90,9 @@ function DrawBody() {
         echo -n "${palya_elemek[szunet]}"                 #szünet a jobb oldali elemig
         echo "${palya_elemek[jobol]}"                     #jobb oldal kirajzolása
 
-        helyez_Y=$((helyez_Y+1))                          #sorral lejjebb akarjuk állítani 
-        echo -en "\033[$((helyez_Y));$((helyez_X))H"      #visszalökés itt történik meg, egy sorral lejjebb
+        y_lepegeto=$((y_lepegeto+1))                          #sorral lejjebb akarjuk állítani 
+        echo -en "\033[$((y_lepegeto));$((outer_X_start))H"      #visszalökés itt történik meg, egy sorral lejjebb
     done
-
 }
 
 function DrawFloor() { 
@@ -129,41 +129,23 @@ function DrawMap() {
     DrawFloor
     DrawAimCircle
 }
- 
-# ezek mind function AimLower() minionjai lesznek
-function DrawLowerOneLine() { true;}
-function DrawLowerTwoLines() { true;}
-function DrawLowerThreeLines() { true;}
 
-# ezek mind function AimHigher() minionjai lesznek
-function DrawHigherOneLine() { true;}
-function DrawHigherTwoLines() { true;}
-function DrawHigherThreeLines() { true;}
-
-#ezek mind function AimRight() minionjai lesznek
-function DrawRightOneColumn() { true;}
-function DrawRightTwoColumns() { true;}
-function DrawRightThreeColumns() { true;}
-
-#ezek mind function AimLeft() minionjai lesznek
-function DrawLeftOneColumn() { true;}
-function DrawLeftTwoColumns() { true;}
-function DrawLeftThreeColumns() { true;}
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
-function IsItExisting() {   #$1 = relatív Y, $2 = relatív_X 
-    if [[ ${palya[$1, $2]} -ne " " ]]; then
-        return 1    #létezik
-    else    
-        return 0    #nem létezik
+function IsItExisting() {   #$1 = relatív_Y, $2 = relatív_X 
+    if [[ ${palya[$1, $2]} != " " ]]; then
+        return 0; # létezik
     fi
+
+    FALSE
+    return 1; #nem létezik
 }
 function IsItOnMap() {      #$1 = relatív Y, $2 = relatív_X 
     if [[ ($1 -gt -1 && $1 -lt $kertMeret) && ($2 -gt -1 && $2 -lt $kertMeret) ]]; then
-        return 1
+        return 0;     #létezik
     fi
 
-    return 0
+    return 1; #nem létezik
 }
 function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
     seged=()
@@ -316,7 +298,7 @@ function AimLeft() {
     echo -en "${palya_elemek[celrovid]}${palya_elemek[celrovid]}"
 }
 
-colorTable=(            #bg = background  fg = foreground
+colorTable=(                        #bg = background  fg = foreground
     [bg_black]="\033[40m"        #works 
     [fg_white]="\033[1;97m"      #untested
     [fg_red]="\033[1;91m"        #works
@@ -513,11 +495,14 @@ szelessegek=(       #szélességek a test kirajzolásához lookup table
     [15]=64
 )
 
+
 ### magasság matek:
 helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)))       #terminál magasságának fele-táblamagasság fele really..
+outer_Y_start=$helyez_Y
 
 ### szélesség matek:
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)))       #terminál szélességének fele-táblaszélesség fele really..
+outer_X_start=$helyez_X
 
 ### Középre helyezés pozícionálása
 echo -en "\033[$((helyez_Y));$((helyez_X))H"    
@@ -591,12 +576,11 @@ dock_Y=$helyez_Y                                         #reset előtt elmentjü
 dock_X=1                                               
 helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modify
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
-#outer_Y_start=$((helyez_Y-1))
-#outer_X_start=$((helyez_X-1))
+
 inner_Y_min=$((helyez_Y))                                #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
 inner_X_min=$((helyez_X))                                #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
-inner_Y_max=$((helyez_Y+((kertMeret)*2)))               #helyez_Y-ban benne van, hogy már 1!
-inner_X_max=$((helyez_X+((kertMeret)*4)))               #helyez_X-ben benne van, hogy már 1!
+inner_Y_max=$((helyez_Y+((kertMeret)*2)))                #belső maximuma ameddig elmehetünk
+inner_X_max=$((helyez_X+((kertMeret)*4)))                #belső maximuma ameddig elmehetünk
 
 echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
 echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
@@ -635,67 +619,53 @@ kilep=0                                                  #hany entert ütöttek 
 relativ_Y=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen ami a pálya memória reprezentációját végezné
 relativ_X=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen ami a pálya memória reprezentációját végezné
 
-echo -en "X: $relativ_X, Y: $relativ_Y" 
-DockCursor "$dock_Y" "$dock_X"
-
 user_pontszam=0
 
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
-while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
+while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
     while [[ $char != "" ]]; do 
-      
+
         kilep=0
         if [[ $char = "w" ]]; then
             if [[ $((helyez_Y-2)) -ge $inner_Y_min ]]; then
                 AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"
-                relativ_Y=$((relativ_Y-1))    
-            fi
+                relativ_Y=$((relativ_Y-1));                             fi
         fi
 
         if [[ $char = "s" ]]; then
             if [[ $((helyez_Y+2)) -lt $inner_Y_max ]]; then 
                 AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X" 
-                relativ_Y=$((relativ_Y+1)) 
-            fi
+                relativ_Y=$((relativ_Y+1));                             fi
         fi
 
         if [[ $char = "a" ]]; then
             if [[ $((helyez_X-4)) -ge $inner_X_min ]]; then 
                 AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X" 
-                relativ_X=$((relativ_X-1))     
-            fi
+                relativ_X=$((relativ_X-1));                             fi
         fi
 
         if [[ $char = "d" ]]; then
             if [[ $((helyez_X+4)) -lt $inner_X_max ]]; then 
                 AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X" 
-                relativ_X=$((relativ_X+1)) 
-            fi
+                relativ_X=$((relativ_X+1)) ;                            fi
         fi
-
-        #echo -en "\033[K"
-        #echo -en "X: $relativ_X, Y: $relativ_Y" 
-        #DockCursor "$dock_Y" "$dock_X"
 
         read -rsn 1 char
     done
 
-    kilep=$((kilep+1))
-    #kilépési kondíciók guard patternel
+    kilep=$((kilep+1)) 
     if [[ kilep -eq 2 ]]; then    #ha két entert ütött egymás után akkor kilépés
         break
     fi
 
-
     #golyó létezésének ellenőrzése, ha nem létezik, ne történjen semmi se!
-    if [[ "$(IsItExisting "$relativ_Y" "$relativ_X")" -eq 1 ]]; then    #amire lőttünk az létezik!
-        
+    if [[ "$(IsItExisting "$relativ_Y" "$relativ_X")" -eq $TRUE ]]; then    #amire lőttünk az létezik!
         #ha létezik amire lőttünk bejutunk ide, most ellenőrizzük, hogy a 4 szomszédja létezik-e
         #valamint, hogy a térképen vannak-e!
         counter=0       #ez a változó fogja számontartani, hogy hány szomszédot találtunk!
 
         ##felette, ugyan azon X-en
-        if [[ "$(IsItOnMap    "$((relativ_Y-1))" "$relativ_X")" -eq 1  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq 1 ]]; 
+        if [[ "$(IsItOnMap "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE ]]; 
         then   
             if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y-1)), $relativ_X]} ]]; then
                 palya[$((relativ_Y-1)), $relativ_X]=" "     #elem kinullázása
@@ -704,7 +674,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
         fi
 
         ##alatta, ugyan azon X-en
-        if [[ "$(IsItOnMap    "$((relativ_Y+1))" "$relativ_X")" -eq 1 && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq 1 ]]; 
+        if [[ "$(IsItOnMap "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE ]]; 
         then    
             if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y+1)), $relativ_X]} ]]; then
                 palya[$((relativ_Y+1)), $relativ_X]=" "     #elem kinullázása
@@ -713,7 +683,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
         fi
 
         ##azonos magasság, balra 
-        if [[ "$(IsItOnMap    "$relativ_Y" "$((relativ_X-1))")" -eq 1 && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq 1 ]]; 
+        if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE ]]; 
         then   
             if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y)), $((relativ_X-1))]} ]]; then
                 palya[$relativ_Y, $((relativ_X-1))]=" "     #elem kinullázása
@@ -722,7 +692,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
         fi
 
         ##azonos magasság, jobbra
-        if [[ "$(IsItOnMap    "$relativ_Y" "$((relativ_X+1))")" -eq 1 && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq 1 ]]; 
+        if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE ]]; 
         then    
             if [[ ${palya[$relativ_Y, $relativ_X]} -eq ${palya[$((relativ_Y)), $((relativ_X+1))]} ]]; then
                 palya[$relativ_Y, $((relativ_X+1))]=" "     #elem kinullázása
@@ -734,28 +704,32 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
             palya[$relativ_Y, $relativ_X]=" "                               #ha volt találat akkor a középső is megsemmisül
             user_pontszam=$((user_pontszam+${pontszam_loves[$counter]}))    #hozzáadjuk a pontszámot
         fi
+
+        DockCursor "1" "1"                              #works
+        echo -n "$username pontszáma: $user_pontszam"   #works
+    
+        ## leesés logika:
+        if [[ "$(IsItOnMap "3" "$helyez_X")" -eq $TRUE ]];       then
+            Reassemble "0" "$helyez_X";                 fi
+    
+        if [[ "$(IsItOnMap "3" "$((helyez_X+1))")" -eq $TRUE ]]; then
+            Reassemble "0" "$((helyez_X+1))";           fi
+
+        if [[ "$(IsItOnMap "3" "$((helyez_X-1))")" -eq $TRUE ]]; then
+            Reassemble "0" "$((helyez_X-1))";           fi
+
+        ### redraw rész:
+        DockCursor "$((outer_Y_start+1))" "$((outer_X_start))"
+        #echo -en "\033[$((outer_Y_start+1));$((outer_X_start+1))H"
+        DrawBody 
+        DrawAimCircle "$helyez_Y" "$helyez_X"       #works
+
+      
+        DockCursor "$dock_Y" "$dock_X"
+
+        #### lépésszám csökkentése
+        loves_counter=$((loves_counter-1))  #lépésszám csökkentése
     fi
-
-    #újrarajzolás és játék ág
-    #itt lesz a kilövési logika és pálya meg minden csinálva...
-    #itt történt már meg a választás...
-    
-
-    ## leesés logika:
-    if "$(IsItOnMap "0" "$helyez_X")";       then
-        Reassemble "0" "$helyez_X";                 fi
-    
-    if "$(IsItOnMap "0" "$((helyez_X+1))")"; then
-        Reassemble "0" "$((helyez_X+1))";           fi
-
-    if "$(IsItOnMap "0" "$((helyez_X-1))")"; then
-        Reassemble "0" "$((helyez_X-1))";           fi
-
-    ### redraw rész:
-
-
-    #### lépésszám csökkentése
-    loves_counter=$((loves_counter-1))  #lépésszám csökkentése
 
     read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!
 done

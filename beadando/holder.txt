@@ -123,3 +123,37 @@ echo $X_max
 
 arr_y_idx=$(((((helyez_Y+1)-(inner_Y_min))/2)-1))   #tábla to pálya memória reprezentálásához való átalakítás
 #arr_x_idx=$(((((helyez_X+4)-(inner_X_min))/4)-1))   #detto
+
+
+        h=0
+        found_h=0 
+        while [[ h -lt hanyszin ]] && [[ found_h -ne 1 ]]
+        do
+            if [[ $h -eq $holder ]]; then
+                palya[$i,$j]=${szinek[h]}
+            fi
+            h=$((h+1))
+        done
+
+
+#echo -en "X: $relativ_X, Y: $relativ_Y" 
+#DockCursor "$dock_Y" "$dock_X"
+
+#echo -en "\033[K"
+#echo -en "X: $relativ_X, Y: $relativ_Y" 
+#DockCursor "$dock_Y" "$dock_X"
+
+#DockCursor "10" "1"
+#echo -en "golyóvizsgálás következik"
+
+DockCursor "2" "1" 
+echo -en "Létezik a golyó"
+
+DockCursor "3" "1" 
+echo -en "Bejutok az első ifbe"
+
+DockCursor "4" "1" 
+echo -en "bejutok az első if ifjébe is"
+
+DockCursor "5" "1" 
+echo "${palya[$((relativ_Y-1)), $relativ_X]}"
