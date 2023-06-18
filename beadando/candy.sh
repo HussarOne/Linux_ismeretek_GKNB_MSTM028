@@ -302,6 +302,10 @@ function AimLeft() {
     echo -en "${palya_elemek[celrovid]}${palya_elemek[celrovid]}"
 }
 
+
+##### filekezeléssel kapcsolatos funkciok
+
+
 colorTable=(                        #bg = background  fg = foreground
     [bg_black]="\033[40m"        #works 
     [fg_white]="\033[1;97m"      #untested
@@ -637,8 +641,9 @@ DockCursor "1" "1"                              #works
 echo "$username pontszáma: $user_pontszam"   #works
 DrawTurnsLeft "$loves_counter"
 
-read -rsn 1 char  #ciklust indító kezdő beolvasás
+
 while [[ loves_counter -ge 0 && kilep -ne 4 ]]; do
+    read -rsn 1 char  #ciklust indító kezdő beolvasás
     while [[ $char != "" ]]; do 
 
         kilep=0
@@ -744,32 +749,32 @@ while [[ loves_counter -ge 0 && kilep -ne 4 ]]; do
 
         DockCursor "$dock_Y" "$dock_X"              #kurzol visszadokkolása
     fi
-
-    read -rsn 1 char                #ez azért kell, mert itt kell egy karakter amivel a belső ciklusba ismét belépünk ha nem enter!
 done
 
-sleep 3
+sleep 2
+
+
 echo -e "clear; \033c\e[3J"                #képernyő letisztítása
 changeTerminalBGColor "bg_black" "$width" "$height" "1" 
 changeTerminalFGColor "fg_white" "$width" "$height" 
+echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
 
 #eredménytábla kiírása:
 ## adott eredménytábla beolvasása, ugyan azon a táblán játszóttakéval vetjük össze
-file="$path/test.txt"
-holder=()
-while read -r line; do
-    holder+=("$line")
+#file="$path/test.txt" test only
+nameHolder=()
+scoreHolder=()
+while IFS=$'\t' read -r col1 col2; do
+    nameHolder+=("$col1")
+    scoreHolder+=("$col2")
 done < "$file"
 
-echo ${holder[@]}
-
-
+#Top 25 player, első 50 karaktere!
+for ((i = 0; i < 25; i++)) do
+    printf "%s \t %s \n" "${nameHolder[$i]:0:50}" "${scoreHolder[$i]:0:50}"
+done
 
 read -rsn 1 char
-echo -e  "clear; \033c\e[3J"        #képernyő letisztítása
-echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
-
-
 
 #-------------------------------------------------------------------
 # tervezési area
