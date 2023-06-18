@@ -483,8 +483,8 @@ outer_Y_start=$((helyez_Y-1))
 outer_X_start=$((helyez_X-1))
 inner_Y_min=$((helyez_Y))                                #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
 inner_X_min=$((helyez_X))                                #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
-inner_Y_max=$((helyez_Y+(($kertMeret-1)*2)))             #helyez_Y-ban benne van, hogy már 1!
-inner_X_max=$((helyez_X+(($kertMeret-1)*4)))             #helyez_X-ben benne van, hogy már 1!
+inner_Y_max=$((helyez_Y+(($kertMeret)*2)))             #helyez_Y-ban benne van, hogy már 1!
+inner_X_max=$((helyez_X+(($kertMeret)*4)))             #helyez_X-ben benne van, hogy már 1!
 
 echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
 echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
@@ -516,37 +516,45 @@ kilep=0                                                  #hany entert ütöttek 
 relativ_Y=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen ami a pálya memória reprezentációját végezné
 relativ_X=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen ami a pálya memória reprezentációját végezné
 
+echo -en "X: $relativ_X, Y: $relativ_Y" 
+DockCursor "$dock_Y" "$dock_X"
+
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
 while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
     while [[ $char != "" ]]; do 
+      
         kilep=0
         if [[ $char = "w" ]]; then
             if [[ $((helyez_Y-2)) -ge $inner_Y_min ]]; then
-                AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X";
-                relatív_Y=$((relativ_Y-1))    
+                AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"
+                relativ_Y=$((relativ_Y-1))    
             fi
         fi
 
         if [[ $char = "s" ]]; then
-            if [[ $((helyez_Y+2)) -le $inner_Y_max ]]; then 
-                AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; 
-                relatív_Y=$((relativ_Y+1)) 
+            if [[ $((helyez_Y+2)) -lt $inner_Y_max ]]; then 
+                AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X" 
+                relativ_Y=$((relativ_Y+1)) 
             fi
         fi
 
         if [[ $char = "a" ]]; then
             if [[ $((helyez_X-4)) -ge $inner_X_min ]]; then 
-                AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
-                relatív_X=$((relativ_X-1))     
+                AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X" 
+                relativ_X=$((relativ_X-1))     
             fi
         fi
 
         if [[ $char = "d" ]]; then
-            if [[ $((helyez_X+4)) -le $inner_X_max ]]; then 
-                AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
-                relatív_X=$((relativ_X+1)) 
+            if [[ $((helyez_X+4)) -lt $inner_X_max ]]; then 
+                AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X" 
+                relativ_X=$((relativ_X+1)) 
             fi
         fi
+
+        echo -en "\033[K"
+        echo -en "X: $relativ_X, Y: $relativ_Y" 
+        DockCursor "$dock_Y" "$dock_X"
 
         read -rsn 1 char
     done
