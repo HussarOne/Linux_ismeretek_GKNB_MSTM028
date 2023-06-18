@@ -621,7 +621,7 @@ relativ_X=0     #megmondja, hogy melyik elemre célzunk a kirajzolt térképen a
 user_pontszam=0
 
 read -rsn 1 char  #ciklust indító kezdő beolvasás
-while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
+while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
     while [[ $char != "" ]]; do 
 
         kilep=0
@@ -653,7 +653,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
     done
 
     kilep=$((kilep+1)) 
-    if [[ kilep -eq 2 ]]; then    #ha két entert ütött egymás után akkor kilépés
+    if [[ kilep -eq 4 ]]; then    #ha két entert ütött egymás után akkor kilépés
         break
     fi
 
@@ -667,9 +667,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         if [[ "$(IsItOnMap "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE  && "$(IsItExisting "$((relativ_Y-1))" "$relativ_X")" -eq $TRUE ]]; 
         then   
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y-1)),$relativ_X]}" ]]; then
-                #unset palya[$((relativ_Y-1)),$((relativ_X))]   #elem kinullázása
-
-                palya[$((relativ_Y-1)),$relativ_X]=" "      #elem kinullázása            
+                palya[$((relativ_Y-1)),$relativ_X]=" "           #elem kinullázása            
                 counter=$((counter+1))
             fi
         fi
@@ -678,8 +676,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         if [[ "$(IsItOnMap "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE && "$(IsItExisting "$((relativ_Y+1))" "$relativ_X")" -eq $TRUE ]]; 
         then    
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y+1)),$relativ_X]}" ]]; then
-                #unset palya[$((relativ_Y+1)),$((relativ_X))]     #elem kinullázása
-                palya[$((relativ_Y+1)),$relativ_X]=" "       #elem kinullázása
+                palya[$((relativ_Y+1)),$relativ_X]=" "            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -688,8 +685,7 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X-1))")" -eq $TRUE ]]; 
         then   
             if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$((relativ_Y)),$((relativ_X-1))]}" ]]; then
-                #unset palya[$((relativ_Y)),$((relativ_X-1))]     #elem kinullázása
-                palya[$relativ_Y,$((relativ_X-1))]=" "       #elem kinullázása
+                palya[$relativ_Y,$((relativ_X-1))]=" "            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
@@ -697,9 +693,8 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 2 ]]; do
         ##azonos magasság, jobbra
         if [[ "$(IsItOnMap "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE && "$(IsItExisting "$relativ_Y" "$((relativ_X+1))")" -eq $TRUE ]]; 
         then    
-            if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$relativ_Y,$relativ_X+1]}" ]]; then
-                #unset palya[$((relativ_Y)),$((relativ_X+1))]     #elem kinullázása
-                palya[$relativ_Y,$((relativ_X+1))]=" "       #elem kinullázása
+            if [[ "${palya[$relativ_Y,$relativ_X]}" = "${palya[$relativ_Y,$((relativ_X+1))]}" ]]; then
+                palya[$relativ_Y,$((relativ_X+1))]=" "            #elem kinullázása
                 counter=$((counter+1))
             fi
         fi
