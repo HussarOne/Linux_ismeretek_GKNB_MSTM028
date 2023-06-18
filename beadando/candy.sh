@@ -11,7 +11,7 @@ declare TRUE
 declare FALSE
 declare CsereElem
 
-CsereElem="█"
+CsereElem="X"
 
 TRUE=0
 #FALSE=1
@@ -154,6 +154,11 @@ function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
     pointer=0
     upperBound=$((kertMeret-1))
 
+    DockCursor "54" "1"
+    echo -en "$1"
+    DockCursor "55" "1"
+    echo -en $upperBound
+
     for ((i=upperBound; i > -1; i--)); do
         if [[ "${palya[$i,$1]}" != "$CsereElem" ]]; then
             seged+=("${palya[$i,$1]}")
@@ -161,10 +166,10 @@ function Reassemble() {     #$1 = relatív_Y, $2 = relatív_X
         fi 
     done 
 
-    for ((i=pointer+1; i <= upperBound; i++)) do seged+=("$CsereElem"); done
+    for ((i=pointer; i <= upperBound; i++)) do seged+=("$CsereElem"); done
 
     DockCursor "60" "1"
-    echo -n "${seged[@]}"
+    echo -n ${seged[@]}
 
     local counter=0
     for ((i=upperBound; i > -1; i--)); do
@@ -626,6 +631,9 @@ user_pontszam=0
 
 read -rsn 1 char  #ciklust indító kezdő beolvasás
 while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
+    DockCursor "1" "1"                              #works
+    echo -n "$username pontszáma: $user_pontszam"   #works
+
     while [[ $char != "" ]]; do 
 
         kilep=0
@@ -707,9 +715,6 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
             palya[$relativ_Y,$relativ_X]=$CsereElem                                #ha volt találat akkor a középső is megsemmisül
             user_pontszam=$((user_pontszam+${pontszam_loves[$counter]}))    #hozzáadjuk a pontszámot
         fi
-
-        DockCursor "1" "1"                              #works
-        echo -n "$username pontszáma: $user_pontszam"   #works
     
         ## leesés logika:
         if [[ "$(IsItOnMap "0" "$relativ_X")" -eq $TRUE ]];       then
@@ -728,10 +733,10 @@ while [[ loves_counter -ge 0 && map_still_playable -ne 0 && kilep -ne 4 ]]; do
 
         DockCursor "3" "1"
         for ((i = 0; i < kertMeret; i++)) do
-            echo ""
             for ((j = 0; j < kertMeret; j++)) do
-                echo -en "${palya[$i,$j]}"
+                printf "%s" "${palya[$i,$j]}"
             done
+            printf "\n"
         done
       
         DockCursor "$dock_Y" "$dock_X"              #kurzol visszadokkolása
