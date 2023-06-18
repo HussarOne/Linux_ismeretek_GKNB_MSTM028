@@ -61,7 +61,10 @@ function DrawLeftTwoColumns() { true;}
 function DrawLeftThreeColumns() { true;}
 
 #### functionok, mint golyó játszik-e még vagy sem, térképen van-e vagy sem jön
-function IsItOnMap() { return 1;}
+function IsItOnMap() { 
+    #if [[ ${palya[]} ]] 
+    true;
+}
 function IsItAlive() { return 1;}
 
 #### functionok, melyek a célkereszthez kellenek!
@@ -477,10 +480,12 @@ dock_Y=$helyez_Y                                         #reset előtt elmentjü
 dock_X=1                                               
 helyez_Y=$((midHeight-(${magassagok[$kertMeret]}/2)+1))  #reset helyez_y + modify
 helyez_X=$((midWidth-(${szelessegek[$kertMeret]}/2)+1))  #reset helyez_x + modify
-Y_null=$((helyez_Y-1))                                   #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
-X_null=$((helyez_X))                                     #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
-Y_max=$((helyez_Y+(($kertMeret-1)*2)))     #helyez_Y-ban benne van, hogy már 1!
-X_max=$((helyez_X+(($kertMeret-1)*4)))     #helyez_X-ben benne van, hogy már 1!
+outer_Y_start=$((helyez_Y-1))
+outer_X_start=$((helyez_X-1))
+inner_Y_min=$((helyez_Y))                                #felelős a tábla felső koordinátájánka megtartásáért középre pozícionálás után
+inner_X_min=$((helyez_X))                                #felelős a tábla bal koordinátájának megtartásáért középre igazítás után
+inner_Y_max=$((helyez_Y+(($kertMeret-1)*2)))             #helyez_Y-ban benne van, hogy már 1!
+inner_X_max=$((helyez_X+(($kertMeret-1)*4)))             #helyez_X-ben benne van, hogy már 1!
 
 echo -en "\033[$((helyez_Y));$((helyez_X))H"             #felső alatti sor, szegélytől beljebb a célkereszt hosszú rajzolásához
 echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú részének nyomtatása
@@ -496,8 +501,6 @@ echo -en "${palya_elemek[celhosszu]}"                    #célkereszt hosszú r�
 
 DockCursor "$dock_Y" "$dock_X"                           #előzőleg már az alját elérő Y-t elmentettük, mivel felülírtuk csak innen hívható elő ismét
 
-
-
 loves_szam=(
     [7]=7
     [9]=9
@@ -509,46 +512,42 @@ loves_szam=(
 loves_counter=${loves_szam[$kertMeret]}                  #Lövések számának beazonosítása pályaméret alapján
 map_still_playable=1                                     #logikai változó, a pálya még játszható-e
 
-val=""
+kilep=0                                                  #hany entert ütöttek már le sorba
 read -rsn 1 char                                         #ciklust indító kezdő beolvasás
 while [[ loves_counter -ge 0 && map_still_playable -ne 0 ]]; do
     while [[ $char != "" ]]; do 
+        kilep=0
         if [[ $char = "w" ]]; then
-            if [[ $((helyez_Y-2)) -ge $Y_null ]]; then
-                AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X";
-                val="$val$char"    
-            fi
+            if [[ $((helyez_Y-2)) -ge $inner_Y_min ]]; then
+                AimHigher "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
         fi
 
         if [[ $char = "s" ]]; then
-            if [[ $((helyez_Y+2)) -le $Y_max ]]; then 
-                AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; 
-                val="$val$char"    
-            fi
+            if [[ $((helyez_Y+2)) -le $inner_Y_max ]]; then 
+                AimLower "$helyez_Y"; DockCursor "$dock_Y" "$dock_X"; fi
         fi
 
         if [[ $char = "a" ]]; then
-            if [[ $((helyez_X-4)) -ge $X_null ]]; then 
-                AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
-                val="$val$char"    
-            fi
+            if [[ $((helyez_X-4)) -ge $inner_X_min ]]; then 
+                AimLeft "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
         fi
 
         if [[ $char = "d" ]]; then
-            if [[ $((helyez_X+4)) -le $X_max ]]; then 
-                AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; 
-                val="$val$char"
-            fi
+            if [[ $((helyez_X+4)) -le $inner_X_max ]]; then 
+                AimRight "$helyez_X"; DockCursor "$dock_Y" "$dock_X"; fi
         fi
 
         read -rsn 1 char
     done
 
+    kilep=$((kilep+1))
     #kilépési kondíciók guard patternel
-    val="$val$char"                                     #mivel enter miatt kilép a for, ezért az entert itt rakjuk hozzá!
-    if [[ ${val[#val-2]+val[#val-1]} -eq "" ]]; then    #ha két entert ütött egymás után akkor kilépés
+    if [[ kilep -eq 2 ]]; then    #ha két entert ütött egymás után akkor kilépés
         break
     fi
+
+    #golyó létezésének ellenőrzése, ha nem létezik, ne történjen semmi se!
+    
 
     #újrarajzolás és játék ág
     #itt lesz a kilövési logika és pálya meg minden csinálva...
