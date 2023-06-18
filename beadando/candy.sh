@@ -137,7 +137,6 @@ function IsItExisting() {   #$1 = relatív_Y, $2 = relatív_X
         return 0; # létezik
     fi
 
-    FALSE
     return 1; #nem létezik
 }
 function IsItOnMap() {      #$1 = relatív Y, $2 = relatív_X 
