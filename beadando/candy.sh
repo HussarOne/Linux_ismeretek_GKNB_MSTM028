@@ -795,4 +795,7 @@ for (( i = 1; i < kivantHossz; i++ )) do
 done
 echo " ." >> "$file"
 echo "eredmények mentve"
-read -rsn 1 char
+sleep 5
+echo -e "clear; \033c\e[3J"                 #képernyő letisztítása
+echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
+#read -rsn 1 char

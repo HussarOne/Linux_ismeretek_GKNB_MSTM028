@@ -3,5 +3,5 @@ todo:
 *esztékai részek, és rövidítések:
 	- eredményeket középre zárni a végső képernyőn!
 	- letesztelni más fileokkal is, már méretekben!
-	- képernyő záró letörlését és visszaszínezését megírni
+	
 	
