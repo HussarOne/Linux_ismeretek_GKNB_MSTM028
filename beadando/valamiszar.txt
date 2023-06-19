@@ -1,7 +1,0 @@
-elemér;48
-pista;40
-józsi;32
-joskapista;15
-HuBa;41
-
- .

@@ -749,7 +749,6 @@ done
 
 sleep 2
 
-
 echo -e "clear; \033c\e[3J"                #képernyő letisztítása
 changeTerminalBGColor "bg_black" "$width" "$height" "1" 
 changeTerminalFGColor "fg_white" "$width" "$height" 
@@ -769,7 +768,11 @@ while IFS=";" read -r col1 col2; do
     scoreHolder+=("$col2")
 done < "$file"
 
+echo "${nameHolder[@]}"
+echo "${#nameHolder[@]}"
+
 kivantHossz=$((${#scoreHolder[@]}-1))
+echo $kivantHossz
 for ((i = 0; i < kivantHossz; i++)) do
     for ((j = i; j < kivantHossz; j++)) do
         if [ ${scoreHolder[$i]} -lt ${scoreHolder[$j]} ]; then
@@ -784,70 +787,16 @@ for ((i = 0; i < kivantHossz; i++)) do
     done
 done
 
-#Top 25 player, első 50 karaktere!
-for ((i = 0; i < 25; i++)) do
+#Top 25 player, első 50 karaktere! "${palya[$relativ_Y,$relativ_X]}"
+for ((i = 0; i < 25 && kivantHossz ; i++)) do
     printf "%-10s \t\t\t  %s \n" "${nameHolder[$i]:0:20}" "${scoreHolder[$i]}"
 done
 
 # file felülírása és újra kiírása
-printf "%s\t%s\n" "${nameHolder[0]}" "${scoreHolder[0]}" >> "$file"
-for (( i = 1; i < ${#nameHolder}; i++ )) do
-    printf "%s\t%s\n" "${nameHolder[$i]}" "${scoreHolder[$i]}" > "$file"
+printf "%s;%s\n" "${nameHolder[0]}" "${scoreHolder[0]}" >| "$file"
+for (( i = 1; i < kivantHossz; i++ )) do
+    printf "%s;%s\n" "${nameHolder[$i]}" "${scoreHolder[$i]}" >> "$file"
 done
-echo " ." > "$file"
+echo " ." >> "$file"
 echo "eredmények mentve"
 read -rsn 1 char
-
-#-------------------------------------------------------------------
-# tervezési area
-#-------------------------------------------------------------------
-#méretek pályaméretek esetén:
-#  7 x  7 = 32 széles, 17 magas wo/ írás és pontok és kurzolnav
-#  9 x  9 = 40 széles, 21 magas wo/
-# 11 x 11 = 48 széles, 25 magas wo/
-# 13 x 13 = 56 széles, 29 magas wo/
-# 15 x 15 = 64 széles, 33 magas wo/
-
-#pályatervek:
-#szükséges karakterek:
-# ▁   alsó nyolcad (felülre!)
-# ▏    bal nyolcad (bal oldalra)
-# ▕   jobb nyolcad (jobb oldalra)
-# ▔  felső nyolcad (alulra!)
-# █   teli   blokk (belülre, 2x, ez a labda)
-# ░  félig   blokk (célzókereszt, négyzet vastagsága 8 környező blokkban)
-
-#
-# ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ 
-#▕    ░░░░░░                 7       9      11      13      15  ▏
-#▕  ██░░██░░██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕    ░░░░░░                                                    ▏   
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏                                 ▕ 
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕7 ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕9 ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕11██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕13██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏ 
-#▕15██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ▏
-#▕                                                              ▏
-# ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
