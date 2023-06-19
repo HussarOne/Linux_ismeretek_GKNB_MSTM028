@@ -749,14 +749,13 @@ done
 
 sleep 2
 
-echo -e "clear; \033c\e[3J"                #képernyő letisztítása
+echo -e "clear; \033c\e[3J"                 #képernyő letisztítása
 changeTerminalBGColor "bg_black" "$width" "$height" "1" 
 changeTerminalFGColor "fg_white" "$width" "$height" 
-echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el
+echo -en "\033[1A"                          #kocsi feljebb ugratása 1-el
 
 #eredménytábla kiírása:
 ## adott eredménytábla beolvasása, ugyan azon a táblán játszóttakéval vetjük össze
-#file="$path/test.txt" test only
 nameHolder=()
 scoreHolder=()
 
@@ -768,11 +767,8 @@ while IFS=";" read -r col1 col2; do
     scoreHolder+=("$col2")
 done < "$file"
 
-echo "${nameHolder[@]}"
-echo "${#nameHolder[@]}"
-
 kivantHossz=$((${#scoreHolder[@]}-1))
-echo $kivantHossz
+
 for ((i = 0; i < kivantHossz; i++)) do
     for ((j = i; j < kivantHossz; j++)) do
         if [ ${scoreHolder[$i]} -lt ${scoreHolder[$j]} ]; then

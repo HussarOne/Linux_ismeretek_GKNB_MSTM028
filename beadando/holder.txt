@@ -209,3 +209,8 @@ józsi;32
 joskapista;15
 HuBa;41
 .
+
+
+echo "${nameHolder[@]}"
+echo "${#nameHolder[@]}"
+echo $kivantHossz
