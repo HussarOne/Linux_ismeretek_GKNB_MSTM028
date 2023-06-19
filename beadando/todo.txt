@@ -1,27 +1,7 @@
 todo:
 
 *esztékai részek, és rövidítések:
-	- fixPos_X értékét paraméterezni a "\033[$startPos;12H" stringekben, mert mostmár tudom, 			hogy hogyan tudom paraméterezni. Feltehetően $($param) módon kell
-
-	- ezt követően a "read -r -n 1 char"-okat kicserélni "read -rsn 1 char" -ra, így nincs
-		karakter megjelenítés, hogy mit nyomtunk!
+	- eredményeket középre zárni a végső képernyőn!
+	- letesztelni más fileokkal is, már méretekben!
+	- képernyő záró letörlését és visszaszínezését megírni
 	
-	- utána a "\033[K" -ket kitörölni, hiszen nem fogunk beleírni at all!
-	- ugyan emiatt a "\033[$aktualPos, 11H" -kat is kitörölni, hiszen nem kell léptetni!
-
-	- A túl kicsi a konzol szövegkiírást megoldani a for ciklusokat lecserélve a mostmár
-		paraméterezhető "\033[L;CH" ugratással! Sokkal egyszerűbb!
-
-	- Az üzenet egybehúzása majd annak indexelése [változó:startindex:hossz] módon! Így nem
-		kell több változó! Rövidít
-
-Játék részek:
-	- Játéktér kirajzolásának implementálása
-
-	- Játéktér középre húzása és úgy kirajzolása
-
-	- Játék logika implementálása
-
-	- Pontok implementálása, hogy ki mennyit ért el!
-	
-

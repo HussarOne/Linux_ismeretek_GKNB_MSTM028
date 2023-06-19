@@ -1,6 +1,8 @@
-oppácska;232
+sdsdsds;246
+sss;230
 elemér;48
 HuBa;41
+pista;40
 józsi;32
 joskapista;15
  .

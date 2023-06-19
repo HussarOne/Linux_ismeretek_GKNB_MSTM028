@@ -785,7 +785,7 @@ done
 
 #Top 25 player, első 25 karaktere! "${palya[$relativ_Y,$relativ_X]}"
 for ((i = 0; i < 25 && i < kivantHossz ; i++)) do
-    printf "%-25s \t\t %4.4s\n" "${nameHolder[$i]:0:20}" "${scoreHolder[$i]}"
+    printf "%-25s \t %4.4s\n" "${nameHolder[$i]:0:20}" "${scoreHolder[$i]}"
 done
 
 # file felülírása és újra kiírása
