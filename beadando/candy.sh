@@ -618,10 +618,10 @@ pontszam_loves=(
 
 loves_szam=(
     [7]=7
-    [9]=9
-    [11]=11
-    [13]=13
-    [15]=15
+    [9]=11
+    [11]=15
+    [13]=19
+    [15]=23
 )
 
 loves_counter=${loves_szam[$kertMeret]}                  #Lövések számának beazonosítása pályaméret alapján
