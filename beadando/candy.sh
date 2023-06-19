@@ -636,7 +636,7 @@ user_pontszam=0
 DockCursor "1" "1"                              #works
 echo "$username pontszáma: $user_pontszam"   #works
 DrawTurnsLeft "$loves_counter"
-
+DockCursor "$dock_Y" "$dock_X"
 
 while [[ loves_counter -ge 0 && kilep -ne 4 ]]; do
     read -rsn 1 char  #ciklust indító kezdő beolvasás
@@ -783,9 +783,25 @@ for ((i = 0; i < kivantHossz; i++)) do
     done
 done
 
+#25 player, + eredmények kiírása fejléc, + elválasztó vonal
+final_Y=$((midHeight-((25+2)/2)-2))
+
+tilte="Rangsor"
+echo -en "\033[$((final_Y));$((midWidth - ${#tilte}/2))H" 
+printf "%s\n" "rangsor"
+
+final_Y=$((final_Y+1))
+final_X=$((midWidth -((20+8+2+4)/2))) #20 balra zárás, 8 tabuláro, 2 szóköz, 4 jobbra zárás 
+echo -en "\033[$((final_Y));$((final_X))H" 
+
+echo -en "----------------------------------" #34db
+final_Y=$((final_Y+1))
+echo -en "\033[$((final_Y));$((final_X))H" 
+
 #Top 25 player, első 25 karaktere! "${palya[$relativ_Y,$relativ_X]}"
 for ((i = 0; i < 25 && i < kivantHossz ; i++)) do
     printf "%-25s \t %4.4s\n" "${nameHolder[$i]:0:20}" "${scoreHolder[$i]}"
+    echo -en "\033[$((final_Y+i+1));$((final_X))H" 
 done
 
 # file felülírása és újra kiírása
@@ -795,7 +811,7 @@ for (( i = 1; i < kivantHossz; i++ )) do
 done
 echo " ." >> "$file"
 echo "eredmények mentve"
-sleep 5
+sleep 15
 echo -e "clear; \033c\e[3J"                 #képernyő letisztítása
 echo -en "\033[1A"                  #kocsi feljebb ugratása 1-el 
-#read -rsn 1 char
+read -rsn 1 char
